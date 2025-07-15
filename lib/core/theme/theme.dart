@@ -23,7 +23,7 @@ elevatedButtonTheme: TElevatedButtonTheme.lightElevatedButtonTheme,
 inputDecorationTheme: TTextFormFieldTheme.lightInputDecorationTheme,
 appBarTheme: TAppbarTheme.lightAppBarTheme,
 checkboxTheme: TCheckboxTheme.lightCheckboxTheme,
-bottomSheetTheme: TBottomSheetTheme.lightBottomSheetTheme
+bottomNavigationBarTheme: BottomNavTheme.light,
 
 
 
@@ -43,7 +43,7 @@ bottomSheetTheme: TBottomSheetTheme.lightBottomSheetTheme
  inputDecorationTheme: TTextFormFieldTheme.darkInputDecorationTheme,
  appBarTheme:  TAppbarTheme.darkAppBarTheme,
  checkboxTheme: TCheckboxTheme.darkCheckboxTheme,
- bottomSheetTheme:TBottomSheetTheme.darkBottomSheetTheme
+ bottomNavigationBarTheme:BottomNavTheme.dark,
 
 
 

@@ -1,4 +1,5 @@
 import 'package:event_app/core/route/route_name.dart';
+import 'package:event_app/layout.dart';
 import 'package:event_app/modules/authentication/screens/forget_password.dart';
 import 'package:event_app/modules/authentication/screens/login.dart';
 import 'package:event_app/modules/authentication/screens/register.dart';
@@ -20,6 +21,9 @@ class AppRouter {
                 return MaterialPageRoute(builder: (_) => ForgetPassword(),settings: settings);
         case RouteNames.home:
                         return MaterialPageRoute(builder: (_) => Homescreen(),settings: settings);
+        case RouteNames.layout:   
+                                return MaterialPageRoute(builder: (_) => Layout(),settings: settings);
+             
 
 
   
