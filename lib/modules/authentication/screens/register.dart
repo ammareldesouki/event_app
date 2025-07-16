@@ -113,7 +113,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             email: _emailController.text,
                             password: _passwordController.text,
                           );
-                      Navigator.pushNamed(context, RouteNames.home);
+                      Navigator.pushNamed(context, RouteNames.layout);
                     } on FirebaseAuthException catch (e) {
                       if (e.code == 'weak-password') {
                         print('The password provided is too weak.');

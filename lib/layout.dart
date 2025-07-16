@@ -1,6 +1,8 @@
 import 'package:event_app/core/constants/colors.dart';
 import 'package:event_app/core/constants/image_strings.dart';
+import 'package:event_app/modules/event/screens/add_event.dart';
 import 'package:event_app/modules/home/screens/home.dart';
+import 'package:event_app/modules/profile/profile.dart';
 import 'package:flutter/material.dart';
 
 
@@ -19,11 +21,11 @@ class _LayoutState extends State<Layout> {
     final List<Widget> screen = [
       Homescreen(),
             Homescreen(),
-                  Homescreen(),
+                  AddEventScreen(),
 
       Homescreen(),
 
-      Homescreen(),
+      ProfileScreen(),
 
 
 
@@ -71,7 +73,7 @@ class _LayoutState extends State<Layout> {
                 borderRadius: BorderRadius.circular(60),
               ),
               child:Icon(Icons.add)),
-            label: 'More',
+            label: '',
           ),
 
           BottomNavigationBarItem(

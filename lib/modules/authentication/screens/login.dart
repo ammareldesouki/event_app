@@ -3,6 +3,7 @@ import 'package:event_app/core/constants/image_strings.dart';
 import 'package:event_app/core/route/route_name.dart';
 import 'package:event_app/core/theme/widget_themes/text_field_theme.dart';
 import 'package:event_app/core/wedgits/cutsome_text_filed.dart';
+import 'package:event_app/modules/authentication/models/user_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -30,7 +31,9 @@ class _LoginScreenState extends State<LoginScreen> {
       accessToken: googleAuth?.accessToken,
       idToken: googleAuth?.idToken,
     );
-                  Navigator.pushReplacementNamed(context, RouteNames.home);
+    final firebaseUser = FirebaseAuth.instance.currentUser;
+    final myUser = UserModel.fromFirebaseUser(firebaseUser!);
+    Navigator.pushReplacementNamed(context, RouteNames.layout);
 
     return await FirebaseAuth.instance.signInWithCredential(credential);
   }
@@ -114,10 +117,10 @@ class _LoginScreenState extends State<LoginScreen> {
                             email: _emailController.text,
                             password: _passwordController.text,
                           );
-                      Navigator.pushNamed(context, RouteNames.home);
+                      Navigator.pushNamed(context, RouteNames.layout);
                     } on FirebaseAuthException catch (e) {
                       if (e.code == 'user-not-found') {
-                        print('No user found for that email.');
+                        print('----------------------------No user found for that email.');
                       } else if (e.code == 'wrong-password') {
                         print('Wrong password provided for that user.');
                       }

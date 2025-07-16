@@ -93,7 +93,7 @@ class _HomeHeaderState extends State<HomeHeader> {
     
               Row(
                 children: [
-                  Image(image: AssetImage(TImages.mapIcon)),
+                  Image(image: AssetImage(TImages.mapIcon),height: 25,),
                   SizedBox(width: 10),
                   Text(
                     "Cairo , Egypt",

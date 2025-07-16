@@ -32,14 +32,10 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser;
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
-      initialRoute:
-         user !=null
-              ? RouteNames.home
-              : RouteNames.splash,
+      initialRoute:  RouteNames.splash,
       onGenerateRoute: AppRouter.generateRoute,
       themeMode: ThemeMode.system,
       theme: TAppTheme.lightAppTheme,

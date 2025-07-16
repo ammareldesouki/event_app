@@ -16,6 +16,9 @@ class TImages {
   static const String mapIcon = "assets/icons/map.png";
   static const String heartIcon = "assets/icons/heart.png";
     static const String heartBBIcon = "assets/icons/heartwithblueborder.png";
+    static const String noteIcon = "assets/icons/note.png";
+        static const String location = "assets/icons/location.png";
+
 
   static const String profileIcon = "assets/icons/profile.png";
   static const String exploreIcon = "assets/icons/explore.png";
