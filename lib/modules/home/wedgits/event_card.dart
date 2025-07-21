@@ -3,8 +3,12 @@ import 'package:event_app/core/constants/image_strings.dart';
 import 'package:flutter/material.dart';
 
 class EventCard extends StatelessWidget {
+  final String title;
+  final String date;
+
+
   const EventCard({
-    super.key,
+    super.key, required this.title, required this.date,
   });
 
   @override
@@ -30,7 +34,11 @@ class EventCard extends StatelessWidget {
             ),
             child: Column(
               children: [
-                Text("21",style: Theme.of(context).textTheme.bodyLarge!.copyWith(color: TColors.primary),),
+                Expanded(child: Text(date, style: Theme
+                    .of(context)
+                    .textTheme
+                    .bodyLarge!
+                    .copyWith(color: TColors.primary),)),
                 Text("Jan",style: Theme.of(context).textTheme.bodySmall!.copyWith(color: TColors.primary)),
               ],
             ),
@@ -54,7 +62,10 @@ class EventCard extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text("This is a Birthday Party",style: Theme.of(context).textTheme.bodyLarge),
+                    Text(title, style: Theme
+                        .of(context)
+                        .textTheme
+                        .bodyLarge),
                     Image(image: AssetImage(TImages.heartBBIcon))
                   ],
                 ),

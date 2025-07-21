@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:event_app/modules/home/wedgits/event_card.dart';
 import 'package:event_app/modules/home/wedgits/home_header.dart';
 import 'package:event_app/services/user_services.dart';
@@ -11,12 +12,21 @@ class Homescreen extends StatefulWidget {
 }
 
 class _HomescreenState extends State<Homescreen> {
+  List data = [];
+
+  _getData() async {
+    QuerySnapshot querySnapshot =
+        await FirebaseFirestore.instance.collection("events").get();
+    data.addAll(querySnapshot.docs);
+    setState(() {});
+  }
 
   UserModel? userModel;
 
   @override
   void initState() {
     _loadUserData();
+    _getData();
     super.initState();
   }
 
@@ -42,26 +52,21 @@ class _HomescreenState extends State<Homescreen> {
               Useremail: '${userModel?.email}',),
             Padding(
               padding: const EdgeInsets.all(16.0),
-              child: SingleChildScrollView(
-                child: Column(
-                  spacing: 10,
-                  children: [
-                    EventCard(),
-                                        EventCard(),
 
-                    EventCard(),
-                    EventCard(),
+              child: ListView.separated(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
 
-                    EventCard(),
-                    EventCard(),
-                    EventCard(),
-
-                  ],
+                scrollDirection: Axis.vertical,
+                  itemBuilder: (context, index) {
+                    return EventCard(
+                      title: data[index]['title'], date: data[index]['date'],);
+                  }
+                  ,
+                  separatorBuilder: (context, index) => SizedBox(height: 10,),
+                  itemCount: data.length
                 ),
               ),
-            )
-
-
           ],
         ),
       ),

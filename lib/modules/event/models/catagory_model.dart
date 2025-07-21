@@ -11,3 +11,4 @@ class CategoryModel {
     required this.imagePath,
   });
 }
+

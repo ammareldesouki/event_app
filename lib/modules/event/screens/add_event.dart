@@ -1,6 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:event_app/core/constants/colors.dart';
 import 'package:event_app/core/constants/image_strings.dart';
 import 'package:event_app/core/wedgits/cutsome_text_filed.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../../home/wedgits/catagory_card.dart';
@@ -12,16 +14,42 @@ class AddEventScreen extends StatefulWidget {
 }
 
 class _AddEventScreenState extends State<AddEventScreen> {
+
+
   int selectedIndex = 0;
-  DateTime? _SelectDate;
-  TimeOfDay? _SelectedTime;
+  TextEditingController _titeController = TextEditingController();
+  TextEditingController _dateController = TextEditingController();
+  TextEditingController _descriptionController = TextEditingController();
+  TimeOfDay? _timeController;
+  TextEditingController _categoryController = TextEditingController();
+  GlobalKey _formkey = GlobalKey<FormState>();
+  final user = FirebaseAuth.instance.currentUser;
+
+  CollectionReference events = FirebaseFirestore.instance.collection('events');
+
+  Future<void> addevent() {
+    // Call the user's CollectionReference to add a new user
+    return events
+        .add({
+      'title': _titeController.text,
+      'date': _dateController.text,
+      'time': _timeController.toString(),
+      'description': _descriptionController.text,
+      'userid': user?.uid,
+      'catageory': Data.categories[selectedIndex].name,
+    })
+        .then((value) => print("User Added"))
+        .catchError((error) => print("Failed to add user: $error"));
+  }
+
+
 
   Future<void> _selecttime() async {
     TimeOfDay? _picked = await showTimePicker(
-        context: context, initialTime: _SelectedTime ?? TimeOfDay.now());
+        context: context, initialTime: _timeController ?? TimeOfDay.now());
 
     setState(() {
-      _SelectedTime = _picked;
+      _timeController = _picked;
     });
   }
 
@@ -35,7 +63,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
         lastDate: DateTime(2030));
 
     setState(() {
-      _SelectDate = _picked;
+      _dateController.text = _picked.toString().split(" ")[0];
     });
   }
 
@@ -68,115 +96,147 @@ class _AddEventScreenState extends State<AddEventScreen> {
                 ),
                    
               ),
-              DefaultTabController(
-                  length: Data.categories.length, child: TabBar(
-                  onTap: (index) {
-                    selectedIndex = index;
-                    setState(() {
+              Form(
 
-                    });
-                  },
+                child: Column(
+                  children: [
+                    DefaultTabController(
+                        length: Data.categories.length, child: TabBar(
 
-                  isScrollable: true,
-                  tabAlignment: TabAlignment.start,
-                  indicatorColor: Colors.white,
-                  dividerColor: Colors.transparent,
-                  indicator:
-                  BoxDecoration(),
+                        onTap: (index) {
+                          selectedIndex = index;
+                          setState(() {
 
+                          });
+                        },
 
-                  tabs: Data.categories.map((category) {
-                    return CatagoryCard(
-                      catagoryModel: category, isSelected: selectedIndex == Data
-                        .categories.indexOf(category),);
-                  }).toList()
-
-              )),
-           SizedBox(height: 27,),
-
-          Text( "Title",style: Theme.of(context).textTheme.bodyMedium,),
-           TCustomeTextFormField(
-            hintText: "Event Title",
-            child: ImageIcon(AssetImage(TImages.noteIcon)),
+                        isScrollable: true,
+                        tabAlignment: TabAlignment.start,
+                        indicatorColor: Colors.white,
+                        dividerColor: Colors.transparent,
+                        indicator:
+                        BoxDecoration(),
 
 
+                        tabs: Data.categories.map((category) {
+                          return CatagoryCard(
+                            catagoryModel: category,
+                            isSelected: selectedIndex == Data
+                                .categories.indexOf(category),);
+                        }).toList()
 
-        
-           ),
+                    )),
+                    SizedBox(height: 27,),
 
-           SizedBox(height: 25,),
-           Text("Description",style: Theme.of(context).textTheme.bodyMedium,),
-           TCustomeTextFormField(
+                    Text("Title", style: Theme
+                        .of(context)
+                        .textTheme
+                        .bodyMedium,),
+                    TCustomeTextFormField(
+                      controller: _titeController,
+                      hintText: "Event Title",
+                      child: ImageIcon(AssetImage(TImages.noteIcon)),
 
-          
-            hintText: "Event Description",
-            
-            maxLine: 4,
-            
-            ),
-            Row(
-              children: [
-                Icon(Icons.calendar_month_outlined),
-                                SizedBox(width: 10,),
 
-                Text("Event Date",style: Theme.of(context).textTheme.bodyMedium,),
-                Spacer(),
-                TextButton(onPressed: () {
-                  _selectData();
-                },
-                    child: Text(
-                      _SelectDate != null ? "${_SelectDate!.day}/${_SelectDate!
-                          .month}/${_SelectDate!.year}" : "Choose Date",
-                      style: Theme
-                          .of(context)
-                          .textTheme
-                          .bodyMedium!
-                          .copyWith(color: TColors.primary),))
-              ],
-            ),
-                Row(
-              children: [
-                Icon(Icons.watch_later_outlined),
-                SizedBox(width: 10,),
-                Text("Event Time",style: Theme.of(context).textTheme.bodyMedium,),
-                Spacer(),
-                TextButton(onPressed: () {
-                  _selecttime();
-                },
-                    child: Text(_SelectedTime != null ? "${_SelectedTime
-                        ?.hour} : ${_SelectedTime?.minute}" : "Choose Time",
-                      style: Theme
-                          .of(context)
-                          .textTheme
-                          .bodyMedium!
-                          .copyWith(color: TColors.primary),))
-              ],
-            ),
-            Text("Location",style: Theme.of(context).textTheme.bodyMedium,),
-            SizedBox(height: 8,),
+                    ),
 
-            ElevatedButton(onPressed: (){}, child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal:  10.0),
-              child: Row(
-                spacing: 8,
-                children: [
-                  Image(image: AssetImage(TImages.location)),
-                  Text(
-                    "Choose Location",style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: TColors.primary)
-                  ),
-                  
-                 
-                ],
-                
-              ),
-            ),
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.white),
+                    SizedBox(height: 25,),
+                    Text("Description", style: Theme
+                        .of(context)
+                        .textTheme
+                        .bodyMedium,),
+                    TCustomeTextFormField(
+                      controller: _descriptionController,
 
-            ),
-                        SizedBox(height: 16,),
-                        Container(
-                          width: double.infinity,
-                          child: ElevatedButton(onPressed: (){}, child: Text("Create Event")))
+                      hintText: "Event Description",
+
+                      maxLine: 4,
+
+                    ),
+                    Row(
+                      children: [
+                        Icon(Icons.calendar_month_outlined),
+                        SizedBox(width: 10,),
+
+                        Text("Event Date", style: Theme
+                            .of(context)
+                            .textTheme
+                            .bodyMedium,),
+                        Spacer(),
+                        TextButton(onPressed: () {
+                          _selectData();
+                        },
+                            child: Text(
+                              _dateController.text != null ? "${_dateController
+                                  .text}" : "Choose Date",
+                              style: Theme
+                                  .of(context)
+                                  .textTheme
+                                  .bodyMedium!
+                                  .copyWith(color: TColors.primary),))
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Icon(Icons.watch_later_outlined),
+                        SizedBox(width: 10,),
+                        Text("Event Time", style: Theme
+                            .of(context)
+                            .textTheme
+                            .bodyMedium,),
+                        Spacer(),
+                        TextButton(onPressed: () {
+                          _selecttime();
+                        },
+                            child: Text(_timeController != null
+                                ? "${_timeController
+                                ?.hour} : ${_timeController?.minute}"
+                                : "Choose Time",
+                              style: Theme
+                                  .of(context)
+                                  .textTheme
+                                  .bodyMedium!
+                                  .copyWith(color: TColors.primary),))
+                      ],
+                    ),
+                    Text("Location", style: Theme
+                        .of(context)
+                        .textTheme
+                        .bodyMedium,),
+                    SizedBox(height: 8,),
+
+                    ElevatedButton(onPressed: () {}, child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                      child: Row(
+                        spacing: 8,
+                        children: [
+                          Image(image: AssetImage(TImages.location)),
+                          Text(
+                              "Choose Location", style: Theme
+                              .of(context)
+                              .textTheme
+                              .bodyMedium!
+                              .copyWith(color: TColors.primary)
+                          ),
+
+
+                        ],
+
+                      ),
+                    ),
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white),
+
+                    ),
+                    SizedBox(height: 16,),
+                    Container(
+                        width: double.infinity,
+                        child: ElevatedButton(onPressed: () {
+                          addevent();
+                        }, child: Text("Create Event"))),
+                  ],
+                ),
+              )
 
           
             ],
