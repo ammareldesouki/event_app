@@ -3,22 +3,45 @@ import 'package:event_app/core/constants/image_strings.dart';
 import 'package:event_app/core/wedgits/cutsome_text_filed.dart';
 import 'package:flutter/material.dart';
 
+import '../../home/wedgits/catagory_card.dart';
+import '../catagoryList.dart';
+
 class AddEventScreen extends StatefulWidget {
   @override
   State<AddEventScreen> createState() => _AddEventScreenState();
 }
 
 class _AddEventScreenState extends State<AddEventScreen> {
-      int selectedIndex = 0;
+  int selectedIndex = 0;
+  DateTime? _SelectDate;
+  TimeOfDay? _SelectedTime;
+
+  Future<void> _selecttime() async {
+    TimeOfDay? _picked = await showTimePicker(
+        context: context, initialTime: _SelectedTime ?? TimeOfDay.now());
+
+    setState(() {
+      _SelectedTime = _picked;
+    });
+  }
+
+
+  Future<void> _selectData() async {
+    DateTime?_picked = await showDatePicker(
+
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate: DateTime(2025),
+        lastDate: DateTime(2030));
+
+    setState(() {
+      _SelectDate = _picked;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-       final List<Map<String, dynamic>> categories = [
-    {'label': 'All', 'icon': Icons.circle},
-    {'label': 'Sport', 'icon': Icons.directions_bike},
-    {'label': 'Birthday', 'icon': Icons.cake},
-  
-  ];
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Create Event',style: Theme.of(context).textTheme.titleLarge!.copyWith(color: TColors.primary),),
@@ -29,6 +52,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Column(
+            spacing: 10,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
@@ -38,51 +62,36 @@ class _AddEventScreenState extends State<AddEventScreen> {
                 decoration: BoxDecoration(
                   color: Colors.white,
                    borderRadius: BorderRadius.circular(16),
-                        image:DecorationImage(image:AssetImage(TImages.brithdayImage),fit: BoxFit.cover )
+                    image: DecorationImage(image: AssetImage(
+                        Data.categories[selectedIndex].imagePath),
+                        fit: BoxFit.cover)
                 ),
                    
               ),
-               SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-              
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: List.generate(categories.length, (index) {
-                        final isSelected = selectedIndex == index;
-                        return Padding(
-                          padding: const EdgeInsets.only(right: 8.0),
-                          child: ChoiceChip(
-                            label: Text(
-                              categories[index]['label'],
-                              style: TextStyle(
-                                color: isSelected ? TColors.primary : Colors.white,
-                              ),
-                            ),
-                            avatar: Icon(
-                              categories[index]['icon'],
-                              size: 18,
-                              color: isSelected ? TColors.primary : Colors.white,
-                            ),
-                            selected: isSelected,
-                            selectedColor: Colors.white,
-                            backgroundColor: TColors.primary,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                              side: BorderSide(color: TColors.primary),
-                            ),
-                            onSelected: (selected) {
-                              setState(() {
-                                selectedIndex = index;
-                              });
-                            },
-                ),
-          
-                        );       
-                  }, 
-                  ),              
-          
-          ),
-                  ),
+              DefaultTabController(
+                  length: Data.categories.length, child: TabBar(
+                  onTap: (index) {
+                    selectedIndex = index;
+                    setState(() {
+
+                    });
+                  },
+
+                  isScrollable: true,
+                  tabAlignment: TabAlignment.start,
+                  indicatorColor: Colors.white,
+                  dividerColor: Colors.transparent,
+                  indicator:
+                  BoxDecoration(),
+
+
+                  tabs: Data.categories.map((category) {
+                    return CatagoryCard(
+                      catagoryModel: category, isSelected: selectedIndex == Data
+                        .categories.indexOf(category),);
+                  }).toList()
+
+              )),
            SizedBox(height: 27,),
 
           Text( "Title",style: Theme.of(context).textTheme.bodyMedium,),
@@ -112,7 +121,17 @@ class _AddEventScreenState extends State<AddEventScreen> {
 
                 Text("Event Date",style: Theme.of(context).textTheme.bodyMedium,),
                 Spacer(),
-                TextButton(onPressed: (){}, child: Text("Choose Date",style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: TColors.primary),))
+                TextButton(onPressed: () {
+                  _selectData();
+                },
+                    child: Text(
+                      _SelectDate != null ? "${_SelectDate!.day}/${_SelectDate!
+                          .month}/${_SelectDate!.year}" : "Choose Date",
+                      style: Theme
+                          .of(context)
+                          .textTheme
+                          .bodyMedium!
+                          .copyWith(color: TColors.primary),))
               ],
             ),
                 Row(
@@ -121,7 +140,16 @@ class _AddEventScreenState extends State<AddEventScreen> {
                 SizedBox(width: 10,),
                 Text("Event Time",style: Theme.of(context).textTheme.bodyMedium,),
                 Spacer(),
-                TextButton(onPressed: (){}, child: Text("Choose Time",style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: TColors.primary),))
+                TextButton(onPressed: () {
+                  _selecttime();
+                },
+                    child: Text(_SelectedTime != null ? "${_SelectedTime
+                        ?.hour} : ${_SelectedTime?.minute}" : "Choose Time",
+                      style: Theme
+                          .of(context)
+                          .textTheme
+                          .bodyMedium!
+                          .copyWith(color: TColors.primary),))
               ],
             ),
             Text("Location",style: Theme.of(context).textTheme.bodyMedium,),

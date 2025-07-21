@@ -1,14 +1,57 @@
 import 'package:event_app/core/constants/colors.dart';
 import 'package:event_app/core/route/route_name.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:event_app/modules/authentication/models/user_model.dart';
+import 'package:event_app/services/auth_services.dart';
+import 'package:event_app/services/user_services.dart';
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
+  @override
+  _ProfileScreenState createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  UserModel? userData;
+  bool isLoading = true;
+  bool isRefreshing = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    try {
+      final user = await UserService.getCurrentUserData();
+      setState(() {
+        userData = user;
+        isLoading = false;
+        isRefreshing = false;
+      });
+    } catch (e) {
+      print('Error loading user data: $e');
+      setState(() {
+        isLoading = false;
+        isRefreshing = false;
+      });
+    }
+  }
+
+  Future<void> _refreshUserData() async {
+    setState(() {
+      isRefreshing = true;
+    });
+    await _loadUserData();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
+
+      body: isLoading
+          ? Center(child: CircularProgressIndicator())
+          : Column(
         children: [
           SizedBox(
             height: 210,
@@ -31,34 +74,88 @@ class ProfileScreen extends StatelessWidget {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
+                          // Profile Image
                           Container(
                             height: 124,
                             width: 124,
                             decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.only(
-                                // topLeft: Radius.circular(25),
                                 bottomLeft: Radius.circular(50),
                                 topRight: Radius.circular(50),
                                 bottomRight: Radius.circular(50),
                               ),
                             ),
+                            child: userData?.photoUrl != null
+                                ? ClipRRect(
+                              borderRadius: BorderRadius.only(
+                                bottomLeft: Radius.circular(50),
+                                topRight: Radius.circular(50),
+                                bottomRight: Radius.circular(50),
+                              ),
+                              child: Image.network(
+                                userData!.photoUrl!,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Icon(
+                                    Icons.person,
+                                    size: 60,
+                                    color: TColors.primary,
+                                  );
+                                },
+                              ),
+                            )
+                                : Icon(
+                              Icons.person,
+                              size: 60,
+                              color: TColors.primary,
+                            ),
                           ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                "AmmarMohmed",
-                                style: Theme.of(context).textTheme.titleLarge!
-                                    .copyWith(color: Colors.white),
+                          // User Info
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 16.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    userData?.name ?? "User",
+                                    style: Theme
+                                        .of(context)
+                                        .textTheme
+                                        .titleLarge!
+                                        .copyWith(color: Colors.white),
+                                  ),
+                                  SizedBox(height: 8),
+                                  Text(
+                                    userData?.email ?? "No email",
+                                    style: Theme
+                                        .of(context)
+                                        .textTheme
+                                        .titleMedium!
+                                        .copyWith(color: Colors.white),
+                                  ),
+                                  SizedBox(height: 8),
+                                  Container(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 12, vertical: 4),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white.withOpacity(0.2),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: Text(
+                                      userData?.role?.toUpperCase() ?? "USER",
+                                      style: Theme
+                                          .of(context)
+                                          .textTheme
+                                          .bodySmall!
+                                          .copyWith(color: Colors.white),
+                                    ),
+                                  ),
+                                ],
                               ),
-                              Text(
-                                "ammareldesouki130@gmail.com",
-                                style: Theme.of(context).textTheme.titleMedium!
-                                    .copyWith(color: Colors.white),
-                              ),
-                            ],
+                            ),
                           ),
                         ],
                       ),
@@ -69,6 +166,7 @@ class ProfileScreen extends StatelessWidget {
             ),
           ),
 
+          // Settings Section
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
             child: Column(
@@ -77,9 +175,11 @@ class ProfileScreen extends StatelessWidget {
               children: [
                 Text(
                   "Language",
-                  style: Theme.of(context).textTheme.titleMedium,
+                  style: Theme
+                      .of(context)
+                      .textTheme
+                      .titleMedium,
                 ),
-
                 Container(
                   height: 56,
                   decoration: BoxDecoration(
@@ -93,14 +193,20 @@ class ProfileScreen extends StatelessWidget {
                       isExpanded: true,
                       hint: Text(
                         "Arabic",
-                        style: Theme.of(context).textTheme.titleMedium!
+                        style: Theme
+                            .of(context)
+                            .textTheme
+                            .titleMedium!
                             .copyWith(color: TColors.primary),
                       ),
                       items: [
                         DropdownMenuItem(
                           child: Text(
                             "English",
-                            style: Theme.of(context).textTheme.titleMedium!
+                            style: Theme
+                                .of(context)
+                                .textTheme
+                                .titleMedium!
                                 .copyWith(color: TColors.primary),
                           ),
                           value: "English",
@@ -108,7 +214,10 @@ class ProfileScreen extends StatelessWidget {
                         DropdownMenuItem(
                           child: Text(
                             "Arabic",
-                            style: Theme.of(context).textTheme.titleMedium!
+                            style: Theme
+                                .of(context)
+                                .textTheme
+                                .titleMedium!
                                 .copyWith(color: TColors.primary),
                           ),
                           value: "Arabic",
@@ -119,7 +228,11 @@ class ProfileScreen extends StatelessWidget {
                   ),
                 ),
 
-                Text("Theme", style: Theme.of(context).textTheme.titleMedium),
+                SizedBox(height: 16),
+                Text("Theme", style: Theme
+                    .of(context)
+                    .textTheme
+                    .titleMedium),
                 Container(
                   height: 56,
                   decoration: BoxDecoration(
@@ -133,14 +246,20 @@ class ProfileScreen extends StatelessWidget {
                       isExpanded: true,
                       hint: Text(
                         "Dark",
-                        style: Theme.of(context).textTheme.titleMedium!
+                        style: Theme
+                            .of(context)
+                            .textTheme
+                            .titleMedium!
                             .copyWith(color: TColors.primary),
                       ),
                       items: [
                         DropdownMenuItem(
                           child: Text(
                             "Dark",
-                            style: Theme.of(context).textTheme.titleMedium!
+                            style: Theme
+                                .of(context)
+                                .textTheme
+                                .titleMedium!
                                 .copyWith(color: TColors.primary),
                           ),
                           value: "Dark",
@@ -148,7 +267,10 @@ class ProfileScreen extends StatelessWidget {
                         DropdownMenuItem(
                           child: Text(
                             "Light",
-                            style: Theme.of(context).textTheme.titleMedium!
+                            style: Theme
+                                .of(context)
+                                .textTheme
+                                .titleMedium!
                                 .copyWith(color: TColors.primary),
                           ),
                           value: "Light",
@@ -158,18 +280,20 @@ class ProfileScreen extends StatelessWidget {
                     ),
                   ),
                 ),
+
+                // User ID Display (for debugging)
+
               ],
             ),
           ),
         ],
       ),
-      bottomSheet: Padding(
+      floatingActionButton: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: ElevatedButton(
           onPressed: () async {
-            final GoogleSignIn googleSignIn = GoogleSignIn();
-            googleSignIn.disconnect();
-            await FirebaseAuth.instance.signOut();
+            await AuthService.disconnect();
+            await AuthService.signOut();
             Navigator.pushReplacementNamed(context, RouteNames.login);
           },
           child: Padding(
@@ -180,9 +304,13 @@ class ProfileScreen extends StatelessWidget {
                 SizedBox(width: 10),
                 Text(
                   "Logout",
-                  style: Theme.of(
+                  style: Theme
+                      .of(
                     context,
-                  ).textTheme.titleMedium!.copyWith(color: Colors.white),
+                  )
+                      .textTheme
+                      .titleMedium!
+                      .copyWith(color: Colors.white),
                 ),
               ],
             ),
@@ -190,6 +318,8 @@ class ProfileScreen extends StatelessWidget {
           style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
         ),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButtonAnimator: FloatingActionButtonAnimator.noAnimation,
     );
   }
 }

@@ -1,12 +1,11 @@
 import 'package:event_app/core/constants/colors.dart';
 import 'package:event_app/core/constants/image_strings.dart';
 import 'package:event_app/core/route/route_name.dart';
-import 'package:event_app/core/theme/widget_themes/text_field_theme.dart';
 import 'package:event_app/core/wedgits/cutsome_text_filed.dart';
-import 'package:event_app/modules/authentication/models/user_model.dart';
+import 'package:event_app/services/auth_services.dart';
+import 'package:event_app/services/user_services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -18,24 +17,20 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  Future<UserCredential> signInWithGoogle() async {
-    // Trigger the authentication flow
-    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-
-    // Obtain the auth details from the request
-    final GoogleSignInAuthentication? googleAuth =
-        await googleUser?.authentication;
-
-    // Create a new credential
-    final credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth?.accessToken,
-      idToken: googleAuth?.idToken,
-    );
-    final firebaseUser = FirebaseAuth.instance.currentUser;
-    final myUser = UserModel.fromFirebaseUser(firebaseUser!);
-    Navigator.pushReplacementNamed(context, RouteNames.layout);
-
-    return await FirebaseAuth.instance.signInWithCredential(credential);
+  Future<void> signInWithGoogle() async {
+    final userCredential = await AuthService.signInWithGoogle(context);
+    if (userCredential != null) {
+      // Check if user exists in Firestore, if not create user data
+      final user = userCredential.user;
+      if (user != null) {
+        final userExists = await UserService.userExists(user.uid);
+        if (!userExists) {
+          // Create user data in Firestore
+          await UserService.createUserFromFirebaseUser(user);
+        }
+      }
+      Navigator.pushReplacementNamed(context, RouteNames.layout);
+    }
   }
 
   @override
@@ -117,6 +112,18 @@ class _LoginScreenState extends State<LoginScreen> {
                             email: _emailController.text,
                             password: _passwordController.text,
                           );
+
+                      // Check if user exists in Firestore, if not create user data
+                      final user = credential.user;
+                      if (user != null) {
+                        final userExists = await UserService.userExists(
+                            user.uid);
+                        if (!userExists) {
+                          // Create user data in Firestore
+                          await UserService.createUserFromFirebaseUser(user);
+                        }
+                      }
+                      
                       Navigator.pushNamed(context, RouteNames.layout);
                     } on FirebaseAuthException catch (e) {
                       if (e.code == 'user-not-found') {
@@ -161,8 +168,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 ],
               ),
               ElevatedButton(
-                onPressed: () {
-                  signInWithGoogle();
+                onPressed: () async {
+                  try {
+                    await signInWithGoogle();
+                  } catch (e) {
+                    print('Button error: $e');
+                  }
                 },
                 child: Row(
                   spacing: 10,

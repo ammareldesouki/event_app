@@ -47,5 +47,16 @@
 		<true/>
 		<key>UIStatusBarHidden</key>
 		<false/>
+		<key>CFBundleURLTypes</key>
+		<array>
+			<dict>
+				<key>CFBundleURLName</key>
+				<string>REVERSED_CLIENT_ID</string>
+				<key>CFBundleURLSchemes</key>
+				<array>
+					<string>com.googleusercontent.apps.577855978564-4gnse8ebt3i58o9e685fkachjd2rtgnm</string>
+				</array>
+			</dict>
+		</array>
 	</dict>
 </plist>

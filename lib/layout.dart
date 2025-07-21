@@ -25,9 +25,7 @@ class _LayoutState extends State<Layout> {
 
       Homescreen(),
 
-      ProfileScreen(),
-
-
+      ProfileScreen()
 
     ];
     void onTapItem(int index) {
@@ -66,16 +64,16 @@ class _LayoutState extends State<Layout> {
               child:Image(image: AssetImage(TImages.mapIcon))),
             label: 'Map',
           ),
-               BottomNavigationBarItem(
-            icon:  Container(
+          BottomNavigationBarItem(
+            icon: Container(
+              padding: EdgeInsets.symmetric(vertical: 6, horizontal: 20),
               decoration: BoxDecoration(
-                color:Colors.white,
+
                 borderRadius: BorderRadius.circular(60),
               ),
-              child:Icon(Icons.add)),
+            ),
             label: '',
           ),
-
           BottomNavigationBarItem(
             icon: Container(
               padding: EdgeInsets.symmetric(vertical: 6, horizontal: 20),
@@ -87,6 +85,7 @@ class _LayoutState extends State<Layout> {
               child: Image(image: AssetImage(TImages.heartIcon))),
             label: 'Love',
           ),
+
 
           BottomNavigationBarItem(
             icon: Container(
@@ -113,6 +112,26 @@ class _LayoutState extends State<Layout> {
           // ),
         ],
       ),
+
+      floatingActionButton: InkWell(
+        onTap: () {
+          setState(() {
+            _selectedIndex = 2;
+          });
+        },
+        child: CircleAvatar(
+          radius: 30,
+          backgroundColor: Colors.white,
+          child: CircleAvatar(
+            radius: 22,
+            child: Icon(Icons.add, color: Colors.white),
+            backgroundColor: TColors.primary,
+          ),
+
+        ),
+      ),
+
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 }

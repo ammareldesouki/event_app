@@ -1,10 +1,9 @@
 import 'package:event_app/core/constants/colors.dart';
 import 'package:event_app/core/constants/image_strings.dart';
 import 'package:event_app/core/route/route_name.dart';
-import 'package:event_app/core/theme/widget_themes/text_field_theme.dart';
 import 'package:event_app/core/wedgits/cutsome_text_filed.dart';
+import 'package:event_app/services/user_services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -113,6 +112,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             email: _emailController.text,
                             password: _passwordController.text,
                           );
+
+                      // Create user data in Firestore
+                      final user = credential.user;
+                      if (user != null) {
+                        await UserService.createUserFromFirebaseUser(
+                            user,
+                            name: _nameController.text
+                        );
+                      }
+                      
                       Navigator.pushNamed(context, RouteNames.layout);
                     } on FirebaseAuthException catch (e) {
                       if (e.code == 'weak-password') {

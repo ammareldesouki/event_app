@@ -1,14 +1,16 @@
 import 'package:event_app/core/constants/colors.dart';
 import 'package:event_app/core/constants/image_strings.dart';
 import 'package:event_app/core/route/route_name.dart';
+import 'package:event_app/modules/event/catagoryList.dart';
 import 'package:event_app/modules/home/wedgits/catagory_card.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:event_app/services/auth_services.dart';
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 
 class HomeHeader extends StatefulWidget {
+  final String Username;
+  final String Useremail;
   const HomeHeader({
-    super.key,
+    super.key, required this.Username, required this.Useremail,
   });
 
   @override
@@ -20,12 +22,7 @@ class _HomeHeaderState extends State<HomeHeader> {
 
   @override
   Widget build(BuildContext context) {
-     final List<Map<String, dynamic>> categories = [
-    {'label': 'All', 'icon': Icons.circle},
-    {'label': 'Sport', 'icon': Icons.directions_bike},
-    {'label': 'Birthday', 'icon': Icons.cake},
-  
-  ];
+
     return Stack(
       children: [
         Container(
@@ -74,9 +71,8 @@ class _HomeHeaderState extends State<HomeHeader> {
                   ),
                      IconButton(
               onPressed: () async {
-                final GoogleSignIn googleSignIn = GoogleSignIn();
-                googleSignIn.disconnect();
-                await FirebaseAuth.instance.signOut();
+                await AuthService.disconnect();
+                await AuthService.signOut();
                 Navigator.pushReplacementNamed(context, RouteNames.login);
               },
               icon: Icon(Icons.exit_to_app),
@@ -85,7 +81,7 @@ class _HomeHeaderState extends State<HomeHeader> {
               ),
     
               Text(
-                "Ammar Mohamed",
+                widget.Username,
                 style: Theme.of(
                   context,
                 ).textTheme.titleLarge!.copyWith(color: Colors.white),
@@ -102,46 +98,31 @@ class _HomeHeaderState extends State<HomeHeader> {
                   ),
                 ],
               ),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-    
-                child: Row(
-                  children: List.generate(categories.length, (index) {
-                        final isSelected = selectedIndex == index;
-                        return Padding(
-                          padding: const EdgeInsets.only(right: 8.0),
-                          child: ChoiceChip(
-                            label: Text(
-                              categories[index]['label'],
-                              style: TextStyle(
-                                color: isSelected ? TColors.primary : Colors.white,
-                              ),
-                            ),
-                            avatar: Icon(
-                              categories[index]['icon'],
-                              size: 18,
-                              color: isSelected ? TColors.primary : Colors.white,
-                            ),
-                            selected: isSelected,
-                            selectedColor: Colors.white,
-                            backgroundColor: TColors.primary,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                              side: BorderSide(color: TColors.primary),
-                            ),
-                            onSelected: (selected) {
-                              setState(() {
-                                selectedIndex = index;
-                              });
-                            },
-                ),
-          
-                        );       
-                  }, 
-                  ),              
-          
-          ),
-        ),
+              DefaultTabController(
+                  length: Data.categories.length, child: TabBar(
+                  onTap: (index) {
+                    selectedIndex = index;
+                    setState(() {
+
+                    });
+                  },
+
+                  isScrollable: true,
+                  tabAlignment: TabAlignment.start,
+                  indicatorColor: Colors.white,
+                  dividerColor: Colors.transparent,
+                  indicator:
+                  BoxDecoration(),
+
+
+                  tabs: Data.categories.map((category) {
+                    return CatagoryCard(catagoryModel: category,
+                      isSelected: selectedIndex ==
+                          Data.categories.indexOf(category),);
+                  }).toList()
+
+              ))
+
       ]),
         )
       ]);
