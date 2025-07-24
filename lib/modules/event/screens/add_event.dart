@@ -230,6 +230,8 @@ class _AddEventScreenState extends State<AddEventScreen> {
                                       _timeController!),
                                   categoryName: Data.categories[selectedIndex]
                                       .name,
+                                    eventImage: Data.categories[selectedIndex]
+                                        .imagePath
                                 )
                             );
                           } else {

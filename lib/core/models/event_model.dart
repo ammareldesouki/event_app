@@ -9,7 +9,7 @@ class EventModel {
   final DateTime dateTime;
   final String timeString; // Store time as a string (e.g., '14:30')
   final String categoryName;
-
+  final String eventImage;
   Map<String, dynamic> toFireStor() {
     return {
       "id": this.id,
@@ -18,6 +18,7 @@ class EventModel {
       "dateTime": this.dateTime,
       "timeString": this.timeString, // Store as string
       "categoryName": this.categoryName,
+      "eventImage": this.eventImage
     };
   }
 
@@ -31,6 +32,8 @@ class EventModel {
           fullDateTime.year, fullDateTime.month, fullDateTime.day),
       timeString: json['timeString'] ?? '',
       categoryName: json['categoryName'] ?? '',
+        eventImage: json['eventImage']
+
     );
   }
 
@@ -40,7 +43,8 @@ class EventModel {
     required this.description,
     required this.dateTime,
     required this.timeString,
-    required this.categoryName
+    required this.categoryName,
+    required this.eventImage
   });
 
   // Helper: Convert TimeOfDay to String

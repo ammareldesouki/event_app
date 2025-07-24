@@ -26,7 +26,9 @@ class _HomeHeaderState extends State<HomeHeader> {
     return Stack(
       children: [
         Container(
-          height: 350,
+          height: MediaQuery
+              .sizeOf(context)
+              .height * 0.3,
           decoration: BoxDecoration(
             color: TColors.primary,
             borderRadius: BorderRadius.only(
