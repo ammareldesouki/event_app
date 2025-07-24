@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'models/catagory_model.dart';
+import '../../core/models/catagory_model.dart';
 
 abstract class Data {
   static final List<CategoryModel> categories = [

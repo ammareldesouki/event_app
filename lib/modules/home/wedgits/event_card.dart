@@ -1,16 +1,28 @@
 import 'package:event_app/core/constants/colors.dart';
 import 'package:event_app/core/constants/image_strings.dart';
+import 'package:event_app/core/models/catagory_model.dart';
+import 'package:event_app/core/models/event_model.dart';
 import 'package:flutter/material.dart';
 
-class EventCard extends StatelessWidget {
-  final String title;
-  final String date;
+class EventCard extends StatefulWidget {
+  final EventModel eventModel;
+
+  const EventCard({super.key, required this.eventModel});
+
+  @override
+  State<EventCard> createState() => _EventCardState();
+}
 
 
-  const EventCard({
-    super.key, required this.title, required this.date,
-  });
+class _EventCardState extends State<EventCard> {
+  CategoryModel? categoryModel;
 
+  @override
+  void initState() {
+    categoryModel =
+        CategoryModel.getCategoryByName(widget.eventModel.categoryName);
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -19,8 +31,10 @@ class EventCard extends StatelessWidget {
           height: 200,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
-              image:  DecorationImage(image:  AssetImage(TImages.bookclubImage),fit: BoxFit.cover )
-          ),
+              image: DecorationImage(
+                  image: AssetImage(categoryModel!.imagePath),
+                  fit: BoxFit.cover)
+          )
         ),
         Positioned(
           top: 4,
@@ -34,12 +48,17 @@ class EventCard extends StatelessWidget {
             ),
             child: Column(
               children: [
-                Expanded(child: Text(date, style: Theme
+                Expanded(child: Text(
+                  widget.eventModel.dateTime.day.toString(), style: Theme
                     .of(context)
                     .textTheme
                     .bodyLarge!
                     .copyWith(color: TColors.primary),)),
-                Text("Jan",style: Theme.of(context).textTheme.bodySmall!.copyWith(color: TColors.primary)),
+                Text(widget.eventModel.dateTime.month.toString(), style: Theme
+                    .of(context)
+                    .textTheme
+                    .bodySmall!
+                    .copyWith(color: TColors.primary)),
               ],
             ),
           ),
@@ -55,14 +74,14 @@ class EventCard extends StatelessWidget {
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(8),
-            
+
               ),
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal:  8.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(title, style: Theme
+                    Text(widget.eventModel.title, style: Theme
                         .of(context)
                         .textTheme
                         .bodyLarge),

@@ -99,7 +99,7 @@ class _HomeHeaderState extends State<HomeHeader> {
                 ],
               ),
               DefaultTabController(
-                  length: Data.categories.length, child: TabBar(
+                  length: Data.categories.length + 1, child: TabBar(
                   onTap: (index) {
                     selectedIndex = index;
                     setState(() {
@@ -115,16 +115,58 @@ class _HomeHeaderState extends State<HomeHeader> {
                   BoxDecoration(),
 
 
-                  tabs: Data.categories.map((category) {
+                  tabs: [
+                    Container(
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: selectedIndex == 0 ? TColors.white : TColors
+                            .primary,
+                        border: Border.all(color: selectedIndex == 0
+                            ? TColors.primary
+                            : TColors.white),
+                        borderRadius: BorderRadius.circular(46),
+
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          children: [
+                            Icon(Icons.explore_rounded,
+                              color: selectedIndex == 0
+                                  ? TColors.primary
+                                  : TColors.white,),
+                            SizedBox(width: 5),
+                            Text(
+                              "All",
+                              style: Theme
+                                  .of(
+                                context,
+                              )
+                                  .textTheme
+                                  .titleSmall!
+                                  .copyWith(
+                                  color: selectedIndex == 0
+                                      ? TColors.primary
+                                      : TColors.white),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    ...Data.categories.map((category) {
                     return CatagoryCard(catagoryModel: category,
-                      isSelected: selectedIndex ==
+                      isSelected: selectedIndex - 1 ==
                           Data.categories.indexOf(category),);
                   }).toList()
 
+                  ]
               ))
 
       ]),
+
         )
       ]);
   }
+
 }

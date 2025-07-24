@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:event_app/core/services/firbase/firestore/event_services.dart';
 import 'package:event_app/modules/home/wedgits/event_card.dart';
 import 'package:event_app/modules/home/wedgits/home_header.dart';
 import 'package:event_app/services/user_services.dart';
@@ -15,10 +15,11 @@ class _HomescreenState extends State<Homescreen> {
   List data = [];
 
   _getData() async {
-    QuerySnapshot querySnapshot =
-        await FirebaseFirestore.instance.collection("events").get();
-    data.addAll(querySnapshot.docs);
-    setState(() {});
+    data = await EventFireBaseFireStore.getEventList();
+    setState(() {
+
+    });
+
   }
 
   UserModel? userModel;
@@ -59,8 +60,7 @@ class _HomescreenState extends State<Homescreen> {
 
                 scrollDirection: Axis.vertical,
                   itemBuilder: (context, index) {
-                    return EventCard(
-                      title: data[index]['title'], date: data[index]['date'],);
+                    return EventCard(eventModel: data[index],);
                   }
                   ,
                   separatorBuilder: (context, index) => SizedBox(height: 10,),

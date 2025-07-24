@@ -1,10 +1,11 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:event_app/core/constants/colors.dart';
 import 'package:event_app/core/constants/image_strings.dart';
+import 'package:event_app/core/models/event_model.dart';
 import 'package:event_app/core/wedgits/cutsome_text_filed.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../../../core/services/firbase/firestore/event_services.dart';
 import '../../home/wedgits/catagory_card.dart';
 import '../catagoryList.dart';
 
@@ -18,29 +19,16 @@ class _AddEventScreenState extends State<AddEventScreen> {
 
   int selectedIndex = 0;
   TextEditingController _titeController = TextEditingController();
-  TextEditingController _dateController = TextEditingController();
+  DateTime? _dateController;
   TextEditingController _descriptionController = TextEditingController();
   TimeOfDay? _timeController;
-  TextEditingController _categoryController = TextEditingController();
+
+  // Removed _categoryController
   GlobalKey _formkey = GlobalKey<FormState>();
   final user = FirebaseAuth.instance.currentUser;
 
-  CollectionReference events = FirebaseFirestore.instance.collection('events');
 
-  Future<void> addevent() {
-    // Call the user's CollectionReference to add a new user
-    return events
-        .add({
-      'title': _titeController.text,
-      'date': _dateController.text,
-      'time': _timeController.toString(),
-      'description': _descriptionController.text,
-      'userid': user?.uid,
-      'catageory': Data.categories[selectedIndex].name,
-    })
-        .then((value) => print("User Added"))
-        .catchError((error) => print("Failed to add user: $error"));
-  }
+
 
 
 
@@ -56,14 +44,12 @@ class _AddEventScreenState extends State<AddEventScreen> {
 
   Future<void> _selectData() async {
     DateTime?_picked = await showDatePicker(
-
         context: context,
         initialDate: DateTime.now(),
-        firstDate: DateTime(2025),
+        firstDate: DateTime.now(), // Allow current date
         lastDate: DateTime(2030));
-
     setState(() {
-      _dateController.text = _picked.toString().split(" ")[0];
+      _dateController = _picked;
     });
   }
 
@@ -80,7 +66,6 @@ class _AddEventScreenState extends State<AddEventScreen> {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Column(
-            spacing: 10,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
@@ -167,8 +152,8 @@ class _AddEventScreenState extends State<AddEventScreen> {
                           _selectData();
                         },
                             child: Text(
-                              _dateController.text != null ? "${_dateController
-                                  .text}" : "Choose Date",
+                              _dateController != null ? "${_dateController
+                              }" : "Choose Date",
                               style: Theme
                                   .of(context)
                                   .textTheme
@@ -232,7 +217,28 @@ class _AddEventScreenState extends State<AddEventScreen> {
                     Container(
                         width: double.infinity,
                         child: ElevatedButton(onPressed: () {
-                          addevent();
+                          if (_dateController != null && _timeController !=
+                              null) {
+                            EventFireBaseFireStore.createNewEvent(
+                                EventModel(
+                                  id: 1,
+                                  // Consider using a unique id in production
+                                  title: _titeController.text,
+                                  description: _descriptionController.text,
+                                  dateTime: _dateController!,
+                                  timeString: EventModel.timeOfDayToString(
+                                      _timeController!),
+                                  categoryName: Data.categories[selectedIndex]
+                                      .name,
+                                )
+                            );
+                          } else {
+                            // Show error if date or time is not selected
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(
+                                  'Please select both date and time.')),
+                            );
+                          }
                         }, child: Text("Create Event"))),
                   ],
                 ),
