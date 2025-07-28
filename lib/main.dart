@@ -4,6 +4,7 @@ import 'package:event_app/core/theme/theme.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -40,6 +41,7 @@ class _MyAppState extends State<MyApp> {
       themeMode: ThemeMode.system,
       theme: TAppTheme.lightAppTheme,
       darkTheme: TAppTheme.darkAppTheme,
+      builder: EasyLoading.init(),
     );
   }
 }

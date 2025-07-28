@@ -2,27 +2,45 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:event_app/core/models/event_model.dart';
 
 class EventFireBaseFireStore {
+  // Get collection reference with converter
   static CollectionReference<EventModel> _getCollectionReferance() {
     return FirebaseFirestore.instance
         .collection(EventModel.collectionName)
-        .withConverter(
+        .withConverter<EventModel>(
           fromFirestore:
-              (snapshot, option) => EventModel.fromFirestore(snapshot.data()!),
-          toFirestore: (value, _) => value.toFireStor(),
+              (snapshot, _) =>
+                  EventModel.fromFirestore(snapshot.data()!, id: snapshot.id),
+          toFirestore: (event, _) => event.toFireStor(),
         );
   }
 
-  static createNewEvent(EventModel eventModel) {
-    var collectionreferance = _getCollectionReferance();
-    var docomentsrecferance = collectionreferance.doc();
-    docomentsrecferance.set(eventModel);
+  // Create new event
+  static Future<void> createNewEvent(EventModel eventModel) async {
+    var collectionReference = _getCollectionReferance();
+    var documentReference = collectionReference.doc();
+    await documentReference.set(eventModel);
   }
 
-  static getEventList() async {
-    var collectionreferance = _getCollectionReferance();
-    var dataColloction = await collectionreferance.get();
-    return dataColloction.docs.map((e) {
-      return e.data();
-    }).toList();
+  // Get all events (with IDs)
+  static Future<List<EventModel>> getEventList() async {
+    var collectionReference = _getCollectionReferance();
+    var querySnapshot = await collectionReference.get();
+    return querySnapshot.docs.map((doc) => doc.data()).toList();
+  }
+
+  // Delete event by ID
+  static Future<void> deleteEvent(String? id) async {
+    if (id == null) return;
+    var collectionReference = _getCollectionReferance();
+    var documentReference = collectionReference.doc(id);
+    await documentReference.delete();
+  }
+
+  // Update existing event
+  static Future<void> updateEvent(EventModel eventModel) async {
+    if (eventModel.id == null) return;
+    var collectionReference = _getCollectionReferance();
+    var documentReference = collectionReference.doc(eventModel.id);
+    await documentReference.set(eventModel);
   }
 }

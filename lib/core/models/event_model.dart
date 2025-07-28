@@ -1,58 +1,73 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class EventModel {
   static String collectionName = 'events';
-  final int id;
-  final String title;
-  final String description;
-  final DateTime dateTime;
-  final String timeString; // Store time as a string (e.g., '14:30')
+
+  final String? id;
+  String title;
+  String description;
+  DateTime dateTime;
+  String timeString; // Store time as a string (e.g., '14:30')
   final String categoryName;
   final String eventImage;
-  Map<String, dynamic> toFireStor() {
-    return {
-      "id": this.id,
-      "title": this.title,
-      "description": this.description,
-      "dateTime": this.dateTime,
-      "timeString": this.timeString, // Store as string
-      "categoryName": this.categoryName,
-      "eventImage": this.eventImage
-    };
-  }
+  bool isFavourite;
+  final LatLng locationEvent;
 
-  factory EventModel.fromFirestore(Map<String, dynamic> json) {
-    final fullDateTime = (json['dateTime'] as Timestamp).toDate();
-    return EventModel(
-      id: json['id'],
-      title: json['title'] ?? '',
-      description: json['description'] ?? '',
-      dateTime: DateTime(
-          fullDateTime.year, fullDateTime.month, fullDateTime.day),
-      timeString: json['timeString'] ?? '',
-      categoryName: json['categoryName'] ?? '',
-        eventImage: json['eventImage']
-
-    );
-  }
 
   EventModel({
-    required this.id,
+    required this.locationEvent,
+    this.id,
     required this.title,
     required this.description,
     required this.dateTime,
     required this.timeString,
     required this.categoryName,
-    required this.eventImage
+    required this.eventImage,
+    this.isFavourite = false,
+
   });
 
-  // Helper: Convert TimeOfDay to String
+  Map<String, dynamic> toFireStor() {
+    return {
+      "title": title,
+      "description": description,
+      "dateTime": dateTime,
+      "timeString": timeString,
+      "categoryName": categoryName,
+      "eventImage": eventImage,
+      "isFavourite": isFavourite,
+      "Location": GeoPoint(
+          this.locationEvent.latitude, this.locationEvent.latitude)
+    };
+  }
+
+  factory EventModel.fromFirestore(Map<String, dynamic> json, {String? id}) {
+    final fullDateTime = (json['dateTime'] as Timestamp).toDate();
+    final loc = json['Location'] as GeoPoint;
+
+    return EventModel(
+        id: id,
+      title: json['title'] ?? '',
+      description: json['description'] ?? '',
+        dateTime: DateTime(
+            fullDateTime.year, fullDateTime.month, fullDateTime.day),
+      timeString: json['timeString'] ?? '',
+      categoryName: json['categoryName'] ?? '',
+        eventImage: json['eventImage'] ?? '',
+        isFavourite: json['isFavourite'] ?? false,
+        locationEvent: LatLng(loc.latitude, loc.longitude)
+
+    );
+  }
+
+  // Convert TimeOfDay to string
   static String timeOfDayToString(TimeOfDay tod) =>
       '${tod.hour.toString().padLeft(2, '0')}:${tod.minute.toString().padLeft(
           2, '0')}';
 
-  // Helper: Convert String to TimeOfDay
+  // Convert string to TimeOfDay
   static TimeOfDay timeOfDayFromString(String tod) {
     final parts = tod.split(':');
     return TimeOfDay(hour: int.parse(parts[0]), minute: int.parse(parts[1]));

@@ -1,7 +1,8 @@
 import 'package:event_app/core/constants/colors.dart';
 import 'package:event_app/core/constants/image_strings.dart';
-import 'package:event_app/modules/event/screens/add_event.dart';
+import 'package:event_app/core/route/route_name.dart';
 import 'package:event_app/modules/home/screens/home.dart';
+import 'package:event_app/modules/map/map.dart';
 import 'package:event_app/modules/profile/profile.dart';
 import 'package:flutter/material.dart';
 
@@ -20,8 +21,7 @@ class _LayoutState extends State<Layout> {
   Widget build(BuildContext context) {
     final List<Widget> screen = [
       Homescreen(),
-            Homescreen(),
-                  AddEventScreen(),
+      MapScreen(),
 
       Homescreen(),
 
@@ -64,16 +64,7 @@ class _LayoutState extends State<Layout> {
               child:Image(image: AssetImage(TImages.mapIcon))),
             label: 'Map',
           ),
-          BottomNavigationBarItem(
-            icon: Container(
-              padding: EdgeInsets.symmetric(vertical: 6, horizontal: 20),
-              decoration: BoxDecoration(
 
-                borderRadius: BorderRadius.circular(60),
-              ),
-            ),
-            label: '',
-          ),
           BottomNavigationBarItem(
             icon: Container(
               padding: EdgeInsets.symmetric(vertical: 6, horizontal: 20),
@@ -115,9 +106,7 @@ class _LayoutState extends State<Layout> {
 
       floatingActionButton: InkWell(
         onTap: () {
-          setState(() {
-            _selectedIndex = 2;
-          });
+          Navigator.pushNamed(context, RouteNames.addEvent);
         },
         child: CircleAvatar(
           radius: 30,

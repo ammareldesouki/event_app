@@ -12,7 +12,7 @@ class Homescreen extends StatefulWidget {
 }
 
 class _HomescreenState extends State<Homescreen> {
-  List data = [];
+  static List data = [];
 
   _getData() async {
     data = await EventFireBaseFireStore.getEventList();

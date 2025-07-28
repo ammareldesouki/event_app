@@ -1,257 +1,452 @@
 import 'package:event_app/core/constants/colors.dart';
 import 'package:event_app/core/constants/image_strings.dart';
 import 'package:event_app/core/models/event_model.dart';
+import 'package:event_app/core/route/route_name.dart';
 import 'package:event_app/core/wedgits/cutsome_text_filed.dart';
+import 'package:event_app/modules/event/widgets/create_event_catagory_card.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../../core/services/firbase/firestore/event_services.dart';
-import '../../home/wedgits/catagory_card.dart';
 import '../catagoryList.dart';
 
 class AddEventScreen extends StatefulWidget {
+  const AddEventScreen({super.key});
+
   @override
   State<AddEventScreen> createState() => _AddEventScreenState();
 }
 
 class _AddEventScreenState extends State<AddEventScreen> {
-
-
   int selectedIndex = 0;
-  TextEditingController _titeController = TextEditingController();
+  final _titleController = TextEditingController();
+  final _descriptionController = TextEditingController();
   DateTime? _dateController;
-  TextEditingController _descriptionController = TextEditingController();
   TimeOfDay? _timeController;
+  GoogleMapController? _mapController;
+  LatLng? _currentPosition;
+  LatLng? _eventLocation;
+  bool _isMapView = false;
+  final _formKey = GlobalKey<FormState>();
+  final _user = FirebaseAuth.instance.currentUser;
 
-  // Removed _categoryController
-  GlobalKey _formkey = GlobalKey<FormState>();
-  final user = FirebaseAuth.instance.currentUser;
+  @override
+  void initState() {
+    super.initState();
+    _getCurrentLocation();
+  }
 
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _descriptionController.dispose();
+    _mapController?.dispose();
+    super.dispose();
+  }
 
+  Future<void> _getCurrentLocation() async {
+    try {
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Please enable location services')),
+          );
+        }
+        return;
+      }
 
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Location permissions are denied')),
+            );
+          }
+          return;
+        }
+      }
 
+      if (permission == LocationPermission.deniedForever) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+                content: Text('Location permissions are permanently denied')),
+          );
+        }
+        return;
+      }
 
+      Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
 
-  Future<void> _selecttime() async {
-    TimeOfDay? _picked = await showTimePicker(
-        context: context, initialTime: _timeController ?? TimeOfDay.now());
+      if (mounted) {
+        setState(() {
+          _currentPosition = LatLng(position.latitude, position.longitude);
+        });
 
+        _mapController?.animateCamera(
+          CameraUpdate.newLatLngZoom(_currentPosition!, 15),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error getting location: $e')),
+        );
+      }
+    }
+  }
+
+  Future<void> _selectTime() async {
+    final picked = await showTimePicker(
+      context: context,
+      initialTime: _timeController ?? TimeOfDay.now(),
+    );
+    if (picked != null && mounted) {
+      setState(() {
+        _timeController = picked;
+      });
+    }
+  }
+
+  Future<void> _selectDate() async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2030),
+    );
+    if (picked != null && mounted) {
+      setState(() {
+        _dateController = picked;
+      });
+    }
+  }
+
+  void _toggleMapView() {
     setState(() {
-      _timeController = _picked;
+      _isMapView = !_isMapView;
     });
   }
 
+  String? _validateTitle(String? value) {
+    if (value == null || value
+        .trim()
+        .isEmpty) {
+      return 'Title cannot be empty';
+    }
+    return null;
+  }
 
-  Future<void> _selectData() async {
-    DateTime?_picked = await showDatePicker(
-        context: context,
-        initialDate: DateTime.now(),
-        firstDate: DateTime.now(), // Allow current date
-        lastDate: DateTime(2030));
-    setState(() {
-      _dateController = _picked;
-    });
+  String? _validateDescription(String? value) {
+    if (value == null || value
+        .trim()
+        .isEmpty) {
+      return 'Description cannot be empty';
+    }
+    return null;
+  }
+
+  Future<void> _createEvent() async {
+    if (_formKey.currentState?.validate() != true) {
+      return;
+    }
+
+    if (_dateController == null || _timeController == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please select both date and time')),
+      );
+      return;
+    }
+
+    if (_eventLocation == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please select an event location')),
+      );
+      return;
+    }
+
+    try {
+      EasyLoading.show(status: 'Creating event...');
+      await EventFireBaseFireStore.createNewEvent(
+          EventModel(
+              locationEvent: LatLng(52.2165157, 6.9437819),
+              // Consider using a unique id in production
+              title: _titleController.text,
+              description: _descriptionController.text,
+              dateTime: _dateController!,
+              timeString: EventModel.timeOfDayToString(
+                  _timeController!),
+              categoryName: Data.categories[selectedIndex]
+                  .name,
+              eventImage: Data.categories[selectedIndex]
+                  .imagePath
+          )
+      );
+      EasyLoading.showSuccess('Event created successfully');
+      if (mounted) {
+        Navigator.pushNamed(context, RouteNames.home);
+      }
+    } catch (e) {
+      EasyLoading.showError('Failed to create event: $e');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
-        title: Text('Create Event',style: Theme.of(context).textTheme.titleLarge!.copyWith(color: TColors.primary),),
+        title: Text(
+          'Create Event',
+          style: Theme
+              .of(context)
+              .textTheme
+              .titleLarge!
+              .copyWith(color: TColors.primary),
+        ),
         centerTitle: true,
       ),
-
-      body: SingleChildScrollView(
+      body: _isMapView
+          ? GoogleMap(
+        mapType: MapType.normal,
+        initialCameraPosition: CameraPosition(
+          target: _currentPosition ?? const LatLng(52.2165157, 6.9437819),
+          zoom: 15,
+        ),
+        onTap: (position) {
+          setState(() {
+            _eventLocation = position;
+          });
+        },
+        markers: {
+          if (_eventLocation != null)
+            Marker(
+              markerId: const MarkerId('eventLocation'),
+              position: _eventLocation!,
+            ),
+          if (_currentPosition != null)
+            Marker(
+              markerId: const MarkerId('currentLocation'),
+              position: _currentPosition!,
+              icon: BitmapDescriptor.defaultMarkerWithHue(
+                  BitmapDescriptor.hueBlue),
+            ),
+        },
+        onMapCreated: (controller) {
+          _mapController = controller;
+          if (_currentPosition != null) {
+            controller.animateCamera(
+              CameraUpdate.newLatLngZoom(_currentPosition!, 15),
+            );
+          }
+        },
+        myLocationEnabled: true,
+        myLocationButtonEnabled: true,
+      )
+          : SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-               height: 200,
-                        
-                        
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                   borderRadius: BorderRadius.circular(16),
-                    image: DecorationImage(image: AssetImage(
-                        Data.categories[selectedIndex].imagePath),
-                        fit: BoxFit.cover)
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Container(
+                  height: 200,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    image: DecorationImage(
+                      image: AssetImage(
+                          Data.categories[selectedIndex].imagePath),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
                 ),
-                   
-              ),
-              Form(
+                const SizedBox(height: 16),
+                DefaultTabController(
+                  length: Data.categories.length,
+                  child: TabBar(
+                    onTap: (index) {
+                      setState(() {
+                        selectedIndex = index;
+                      });
+                    },
+                    isScrollable: true,
+                    tabAlignment: TabAlignment.start,
+                    indicatorColor: Colors.transparent,
+                    dividerColor: Colors.transparent,
+                    tabs: Data.categories
+                        .asMap()
+                        .entries
+                        .map((entry) =>
+                        CreateEventCatagoryCard(
+                          catagoryModel: entry.value,
+                          isSelected: selectedIndex == entry.key,
+                        ))
+                        .toList(),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Title',
+                  style: Theme
+                      .of(context)
+                      .textTheme
+                      .bodyMedium,
+                ),
+                TCustomeTextFormField(
+                  validator: _validateTitle,
+                  controller: _titleController,
+                  hintText: 'Event Title',
+                  child: const ImageIcon(AssetImage(TImages.noteIcon)),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Description',
+                  style: Theme
+                      .of(context)
+                      .textTheme
+                      .bodyMedium,
+                ),
+                TCustomeTextFormField(
+                  validator: _validateDescription,
+                  controller: _descriptionController,
+                  hintText: 'Event Description',
+                  maxLine: 4,
 
-                child: Column(
+                ),
+                const SizedBox(height: 16),
+                Row(
                   children: [
-                    DefaultTabController(
-                        length: Data.categories.length, child: TabBar(
-
-                        onTap: (index) {
-                          selectedIndex = index;
-                          setState(() {
-
-                          });
-                        },
-
-                        isScrollable: true,
-                        tabAlignment: TabAlignment.start,
-                        indicatorColor: Colors.white,
-                        dividerColor: Colors.transparent,
-                        indicator:
-                        BoxDecoration(),
-
-
-                        tabs: Data.categories.map((category) {
-                          return CatagoryCard(
-                            catagoryModel: category,
-                            isSelected: selectedIndex == Data
-                                .categories.indexOf(category),);
-                        }).toList()
-
-                    )),
-                    SizedBox(height: 27,),
-
-                    Text("Title", style: Theme
-                        .of(context)
-                        .textTheme
-                        .bodyMedium,),
-                    TCustomeTextFormField(
-                      controller: _titeController,
-                      hintText: "Event Title",
-                      child: ImageIcon(AssetImage(TImages.noteIcon)),
-
-
+                    const Icon(Icons.calendar_month_outlined),
+                    const SizedBox(width: 10),
+                    Text(
+                      'Event Date',
+                      style: Theme
+                          .of(context)
+                          .textTheme
+                          .bodyMedium,
                     ),
-
-                    SizedBox(height: 25,),
-                    Text("Description", style: Theme
-                        .of(context)
-                        .textTheme
-                        .bodyMedium,),
-                    TCustomeTextFormField(
-                      controller: _descriptionController,
-
-                      hintText: "Event Description",
-
-                      maxLine: 4,
-
-                    ),
-                    Row(
-                      children: [
-                        Icon(Icons.calendar_month_outlined),
-                        SizedBox(width: 10,),
-
-                        Text("Event Date", style: Theme
+                    const Spacer(),
+                    TextButton(
+                      onPressed: _selectDate,
+                      child: Text(
+                        _dateController != null
+                            ? _dateController!.toString().split(' ')[0]
+                            : 'Choose Date',
+                        style: Theme
                             .of(context)
                             .textTheme
-                            .bodyMedium,),
-                        Spacer(),
-                        TextButton(onPressed: () {
-                          _selectData();
-                        },
-                            child: Text(
-                              _dateController != null ? "${_dateController
-                              }" : "Choose Date",
-                              style: Theme
-                                  .of(context)
-                                  .textTheme
-                                  .bodyMedium!
-                                  .copyWith(color: TColors.primary),))
-                      ],
+                            .bodyMedium!
+                            .copyWith(color: TColors.primary),
+                      ),
                     ),
-                    Row(
-                      children: [
-                        Icon(Icons.watch_later_outlined),
-                        SizedBox(width: 10,),
-                        Text("Event Time", style: Theme
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    const Icon(Icons.watch_later_outlined),
+                    const SizedBox(width: 10),
+                    Text(
+                      'Event Time',
+                      style: Theme
+                          .of(context)
+                          .textTheme
+                          .bodyMedium,
+                    ),
+                    const Spacer(),
+                    TextButton(
+                      onPressed: _selectTime,
+                      child: Text(
+                        _timeController != null
+                            ? _timeController!.format(context)
+                            : 'Choose Time',
+                        style: Theme
                             .of(context)
                             .textTheme
-                            .bodyMedium,),
-                        Spacer(),
-                        TextButton(onPressed: () {
-                          _selecttime();
-                        },
-                            child: Text(_timeController != null
-                                ? "${_timeController
-                                ?.hour} : ${_timeController?.minute}"
-                                : "Choose Time",
-                              style: Theme
-                                  .of(context)
-                                  .textTheme
-                                  .bodyMedium!
-                                  .copyWith(color: TColors.primary),))
-                      ],
+                            .bodyMedium!
+                            .copyWith(color: TColors.primary),
+                      ),
                     ),
-                    Text("Location", style: Theme
-                        .of(context)
-                        .textTheme
-                        .bodyMedium,),
-                    SizedBox(height: 8,),
-
-                    ElevatedButton(onPressed: () {}, child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                      child: Row(
-                        spacing: 8,
-                        children: [
-                          Image(image: AssetImage(TImages.location)),
-                          Text(
-                              "Choose Location", style: Theme
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Location',
+                  style: Theme
+                      .of(context)
+                      .textTheme
+                      .bodyMedium,
+                ),
+                ElevatedButton(
+                  onPressed: _toggleMapView,
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Image.asset(TImages.location, width: 24),
+                        const SizedBox(width: 8),
+                        Text(
+                          _eventLocation != null
+                              ? 'Location Selected'
+                              : 'Choose Location',
+                          style: Theme
                               .of(context)
                               .textTheme
                               .bodyMedium!
-                              .copyWith(color: TColors.primary)
-                          ),
-
-
-                        ],
-
-                      ),
+                              .copyWith(color: TColors.primary),
+                        ),
+                      ],
                     ),
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white),
-
-                    ),
-                    SizedBox(height: 16,),
-                    Container(
-                        width: double.infinity,
-                        child: ElevatedButton(onPressed: () {
-                          if (_dateController != null && _timeController !=
-                              null) {
-                            EventFireBaseFireStore.createNewEvent(
-                                EventModel(
-                                  id: 1,
-                                  // Consider using a unique id in production
-                                  title: _titeController.text,
-                                  description: _descriptionController.text,
-                                  dateTime: _dateController!,
-                                  timeString: EventModel.timeOfDayToString(
-                                      _timeController!),
-                                  categoryName: Data.categories[selectedIndex]
-                                      .name,
-                                    eventImage: Data.categories[selectedIndex]
-                                        .imagePath
-                                )
-                            );
-                          } else {
-                            // Show error if date or time is not selected
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text(
-                                  'Please select both date and time.')),
-                            );
-                          }
-                        }, child: Text("Create Event"))),
-                  ],
+                  ),
                 ),
-              )
-
-          
-            ],
+              ],
+            ),
           ),
         ),
       ),
+      floatingActionButton: _isMapView ?
+      Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: ElevatedButton(
+          onPressed: () {
+            _isMapView = !_isMapView;
+            setState(() {
 
+            });
+          },
+          child: Text('Tap to Select Location'),
+        ),
+      ) :
+      Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: ElevatedButton(
+          onPressed: () {
+            _createEvent();
+
+            setState(() {
+
+            });
+          },
+          child: Text('Create Event'),
+        ),
+      ),
+
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 }

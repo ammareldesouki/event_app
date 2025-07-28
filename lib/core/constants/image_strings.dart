@@ -31,6 +31,7 @@ class TImages {
   static const meatingImage = "assets/banners/meating.png";
   static const sportImage = "assets/banners/sport.png";
   static const workshopImage = "assets/banners/workshop.png";
-
+  static const cLocationIcon = "assets/icons/clocationIcon.png";
+  static const eLocationIcon = "assets/icons/etlocationicon.png";
   static const String forgetPassword = "assets/images/forgetpassword.png";
 }

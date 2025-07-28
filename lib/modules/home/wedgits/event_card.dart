@@ -1,6 +1,6 @@
 import 'package:event_app/core/constants/colors.dart';
-import 'package:event_app/core/constants/image_strings.dart';
 import 'package:event_app/core/models/event_model.dart';
+import 'package:event_app/core/services/firbase/firestore/event_services.dart';
 import 'package:event_app/modules/event/screens/event_ditailes.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -25,6 +25,8 @@ class _EventCardState extends State<EventCard> {
   }
   @override
   Widget build(BuildContext context) {
+    print(
+        "------------------${widget.eventModel.id}--------------------------");
     String month = DateFormat.MMMM().format(widget.eventModel.dateTime);
     return InkWell(
       onTap: () {
@@ -87,7 +89,19 @@ class _EventCardState extends State<EventCard> {
                         .of(context)
                         .textTheme
                         .bodyLarge),
-                    Image(image: AssetImage(TImages.heartBBIcon))
+                    InkWell(
+                        onTap: () {
+                          widget.eventModel.isFavourite = !widget.eventModel
+                              .isFavourite;
+                          EventFireBaseFireStore.updateEvent(widget.eventModel);
+
+                          setState(() {
+
+                          });
+                        },
+                        child: Icon(widget.eventModel.isFavourite == false
+                            ? Icons.favorite_border
+                            : Icons.favorite, color: TColors.primary,)),
                   ],
                 ),
               ),
