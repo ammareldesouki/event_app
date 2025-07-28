@@ -1,4 +1,4 @@
-import 'package:event_app/services/user_services.dart';
+import 'package:event_app/core/services/user_services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';

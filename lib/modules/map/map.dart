@@ -1,9 +1,12 @@
 import 'dart:async';
 
+import 'package:event_app/modules/map/wedgits/map_event_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+
+import '../../core/services/app_data_services.dart';
 
 class MapScreen extends StatefulWidget {
   @override
@@ -19,7 +22,6 @@ class _MapScreenState extends State<MapScreen> {
   @override
   void initState() {
     super.initState();
-
     _getLocationPermission();
   }
 
@@ -79,18 +81,46 @@ class _MapScreenState extends State<MapScreen> {
 
   Widget build(BuildContext context) {
     return Scaffold(
-      body: GoogleMap(
-        mapType: MapType.normal,
+      body: Stack(
+        children: [
+          GoogleMap(
+            mapType: MapType.normal,
 
-        initialCameraPosition: CameraPosition(
-          target: _currentPosition ?? LatLng(52.2165157, 6.9437819),
-          zoom: 20,
-        ),
+            initialCameraPosition: CameraPosition(
+              target: _currentPosition ?? LatLng(52.2165157, 6.9437819),
+              zoom: 20,
+            ),
 
-        markers: _markers,
-        onMapCreated: (controller) => _mapController = controller,
-        myLocationEnabled: true,
-        myLocationButtonEnabled: true,
+            markers: _markers,
+            onMapCreated: (controller) => _mapController = controller,
+            myLocationEnabled: true,
+            myLocationButtonEnabled: true,
+          ),
+
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: SizedBox(
+                height: 100,
+
+                child: ListView.separated(
+                  shrinkWrap: true,
+                  itemCount: AppDataService.events.length,
+                  scrollDirection: Axis.horizontal,
+                  itemBuilder: (_, index) {
+                    return MapEventCard(
+                      eventModel: AppDataService.events[index],
+                    );
+                  },
+                  separatorBuilder: (_, index) => SizedBox(width: 10),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

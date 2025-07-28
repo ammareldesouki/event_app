@@ -1,8 +1,8 @@
 import 'package:event_app/core/constants/colors.dart';
 import 'package:event_app/core/route/route_name.dart';
+import 'package:event_app/core/services/auth_services.dart';
+import 'package:event_app/core/services/user_services.dart';
 import 'package:event_app/modules/authentication/models/user_model.dart';
-import 'package:event_app/services/auth_services.dart';
-import 'package:event_app/services/user_services.dart';
 import 'package:flutter/material.dart';
 
 class ProfileScreen extends StatefulWidget {

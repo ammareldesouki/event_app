@@ -10,7 +10,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-import '../../../core/services/firbase/firestore/event_services.dart';
+import '../../../core/services/event_services.dart';
 import '../catagoryList.dart';
 
 class AddEventScreen extends StatefulWidget {
@@ -192,7 +192,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
       );
       EasyLoading.showSuccess('Event created successfully');
       if (mounted) {
-        Navigator.pushNamed(context, RouteNames.home);
+        Navigator.pushReplacementNamed(context, RouteNames.layout);
       }
     } catch (e) {
       EasyLoading.showError('Failed to create event: $e');

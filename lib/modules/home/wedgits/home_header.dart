@@ -1,9 +1,9 @@
 import 'package:event_app/core/constants/colors.dart';
 import 'package:event_app/core/constants/image_strings.dart';
 import 'package:event_app/core/route/route_name.dart';
+import 'package:event_app/core/services/auth_services.dart';
 import 'package:event_app/modules/event/catagoryList.dart';
 import 'package:event_app/modules/home/wedgits/catagory_card.dart';
-import 'package:event_app/services/auth_services.dart';
 import 'package:flutter/material.dart';
 
 class HomeHeader extends StatefulWidget {

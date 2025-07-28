@@ -1,7 +1,7 @@
-import 'package:event_app/core/services/firbase/firestore/event_services.dart';
+import 'package:event_app/core/services/app_data_services.dart';
+import 'package:event_app/core/services/user_services.dart';
 import 'package:event_app/modules/home/wedgits/event_card.dart';
 import 'package:event_app/modules/home/wedgits/home_header.dart';
-import 'package:event_app/services/user_services.dart';
 import 'package:flutter/material.dart';
 
 import '../../authentication/models/user_model.dart';
@@ -12,22 +12,13 @@ class Homescreen extends StatefulWidget {
 }
 
 class _HomescreenState extends State<Homescreen> {
-  static List data = [];
 
-  _getData() async {
-    data = await EventFireBaseFireStore.getEventList();
-    setState(() {
-
-    });
-
-  }
 
   UserModel? userModel;
 
   @override
   void initState() {
     _loadUserData();
-    _getData();
     super.initState();
   }
 
@@ -60,11 +51,11 @@ class _HomescreenState extends State<Homescreen> {
 
                 scrollDirection: Axis.vertical,
                   itemBuilder: (context, index) {
-                    return EventCard(eventModel: data[index],);
+                    return EventCard(eventModel: AppDataService.events[index],);
                   }
                   ,
                   separatorBuilder: (context, index) => SizedBox(height: 10,),
-                  itemCount: data.length
+                  itemCount: AppDataService.events.length
                 ),
               ),
           ],

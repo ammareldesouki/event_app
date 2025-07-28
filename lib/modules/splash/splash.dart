@@ -1,5 +1,6 @@
 import 'package:event_app/core/constants/image_strings.dart';
 import 'package:event_app/core/route/route_name.dart';
+import 'package:event_app/core/services/app_data_services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -18,8 +19,10 @@ class _SplashScreenState extends State<SplashScreen> {
     Future.delayed(
       Duration(seconds: 3),
       () {
-        if(user !=null)
-        Navigator.pushReplacementNamed(context, RouteNames.layout);
+        if (user != null) {
+          AppDataService.getEventList();
+          Navigator.pushReplacementNamed(context, RouteNames.layout);
+        }
         else
                 Navigator.pushReplacementNamed(context, RouteNames.login);
 

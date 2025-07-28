@@ -1,6 +1,6 @@
 import 'package:event_app/core/constants/colors.dart';
 import 'package:event_app/core/models/event_model.dart';
-import 'package:event_app/core/services/firbase/firestore/event_services.dart';
+import 'package:event_app/core/services/event_services.dart';
 import 'package:event_app/modules/event/screens/event_ditailes.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
