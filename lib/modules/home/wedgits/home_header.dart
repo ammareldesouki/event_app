@@ -1,16 +1,16 @@
 import 'package:event_app/core/constants/colors.dart';
 import 'package:event_app/core/constants/image_strings.dart';
 import 'package:event_app/core/route/route_name.dart';
+import 'package:event_app/core/services/app_data_services.dart';
 import 'package:event_app/core/services/auth_services.dart';
 import 'package:event_app/modules/event/catagoryList.dart';
 import 'package:event_app/modules/home/wedgits/catagory_card.dart';
 import 'package:flutter/material.dart';
 
 class HomeHeader extends StatefulWidget {
-  final String Username;
-  final String Useremail;
+
   const HomeHeader({
-    super.key, required this.Username, required this.Useremail,
+    super.key,
   });
 
   @override
@@ -19,6 +19,11 @@ class HomeHeader extends StatefulWidget {
 
 class _HomeHeaderState extends State<HomeHeader> {
     int selectedIndex = 0;
+
+    @override
+    void initState() {
+      super.initState();
+    }
 
   @override
   Widget build(BuildContext context) {
@@ -83,7 +88,7 @@ class _HomeHeaderState extends State<HomeHeader> {
               ),
     
               Text(
-                widget.Username,
+                AppDataService.currentUserData?.name ?? "null",
                 style: Theme.of(
                   context,
                 ).textTheme.titleLarge!.copyWith(color: Colors.white),

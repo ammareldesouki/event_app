@@ -22,16 +22,19 @@ class _MapScreenState extends State<MapScreen> {
   @override
   void initState() {
     super.initState();
+    AppDataService.currentLocation ??
+        EasyLoading.show(status: "....looding");
+    _markers.add(Marker(markerId: MarkerId("current"),
+        position: AppDataService.currentLocation ??
+            LatLng(52.2165157, 6.9437819),
+        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRose)));
+    EasyLoading.dismiss();
+
     _getLocationPermission();
+
   }
 
-  Future<void> _loadMarkerIcon() async {
-    var eventIcon = await BitmapDescriptor.fromAssetImage(
-      ImageConfiguration(size: Size(48, 48)),
-      'assets/images/marker_event.png',
-    );
-    setState(() {});
-  }
+
 
   Future<void> _getLocationPermission() async {
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
@@ -46,48 +49,27 @@ class _MapScreenState extends State<MapScreen> {
       permission = await Geolocator.requestPermission();
       if (permission != LocationPermission.always &&
           permission != LocationPermission.whileInUse) {
+        _markers.add(Marker(markerId: MarkerId("current"),
+            position: AppDataService.currentLocation ??
+                LatLng(52.2165157, 6.9437819)));
         return;
       }
     }
-
-    _getCurrentLocation();
   }
 
-  Future<void> _getCurrentLocation() async {
-    EasyLoading.show(status: 'loading...');
 
-    Position? position = await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.high,
-    );
-
-    setState(() {
-      _currentPosition = LatLng(position.latitude, position.longitude);
-      _markers.add(
-        Marker(
-          markerId: MarkerId('currentLocation'),
-          position: _currentPosition!,
-          infoWindow: InfoWindow(title: "Your Location"),
-          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRose),
-          draggable: true,
-        ),
-      );
-
-      _mapController?.animateCamera(
-        CameraUpdate.newLatLngZoom(_currentPosition!, 15),
-      );
-      EasyLoading.dismiss();
-    });
-  }
 
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
+
           GoogleMap(
             mapType: MapType.normal,
 
             initialCameraPosition: CameraPosition(
-              target: _currentPosition ?? LatLng(52.2165157, 6.9437819),
+              target: AppDataService.currentLocation ??
+                  LatLng(52.2165157, 6.9437819),
               zoom: 20,
             ),
 

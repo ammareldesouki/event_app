@@ -2,6 +2,7 @@ import 'package:event_app/core/constants/colors.dart';
 import 'package:event_app/core/constants/image_strings.dart';
 import 'package:event_app/core/models/event_model.dart';
 import 'package:event_app/core/route/route_name.dart';
+import 'package:event_app/core/services/app_data_services.dart';
 import 'package:event_app/core/wedgits/cutsome_text_filed.dart';
 import 'package:event_app/modules/event/widgets/create_event_catagory_card.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -27,7 +28,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
   DateTime? _dateController;
   TimeOfDay? _timeController;
   GoogleMapController? _mapController;
-  LatLng? _currentPosition;
+  LatLng? _currentPosition = AppDataService.currentLocation;
   LatLng? _eventLocation;
   bool _isMapView = false;
   final _formKey = GlobalKey<FormState>();
@@ -82,19 +83,8 @@ class _AddEventScreenState extends State<AddEventScreen> {
         return;
       }
 
-      Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
-      );
 
-      if (mounted) {
-        setState(() {
-          _currentPosition = LatLng(position.latitude, position.longitude);
-        });
 
-        _mapController?.animateCamera(
-          CameraUpdate.newLatLngZoom(_currentPosition!, 15),
-        );
-      }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -192,6 +182,19 @@ class _AddEventScreenState extends State<AddEventScreen> {
       );
       EasyLoading.showSuccess('Event created successfully');
       if (mounted) {
+        AppDataService.events.add(EventModel(
+            locationEvent: LatLng(52.2165157, 6.9437819),
+            // Consider using a unique id in production
+            title: _titleController.text,
+            description: _descriptionController.text,
+            dateTime: _dateController!,
+            timeString: EventModel.timeOfDayToString(
+                _timeController!),
+            categoryName: Data.categories[selectedIndex]
+                .name,
+            eventImage: Data.categories[selectedIndex]
+                .imagePath
+        ));
         Navigator.pushReplacementNamed(context, RouteNames.layout);
       }
     } catch (e) {
@@ -438,9 +441,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
           onPressed: () {
             _createEvent();
 
-            setState(() {
 
-            });
           },
           child: Text('Create Event'),
         ),

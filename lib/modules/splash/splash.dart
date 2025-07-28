@@ -17,10 +17,12 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
 
     Future.delayed(
-      Duration(seconds: 3),
+      Duration(seconds: 4),
       () {
         if (user != null) {
+          AppDataService.getcurrentUserData();
           AppDataService.getEventList();
+          AppDataService.getcurrentLocation();
           Navigator.pushReplacementNamed(context, RouteNames.layout);
         }
         else

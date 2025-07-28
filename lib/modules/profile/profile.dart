@@ -1,8 +1,7 @@
 import 'package:event_app/core/constants/colors.dart';
 import 'package:event_app/core/route/route_name.dart';
+import 'package:event_app/core/services/app_data_services.dart';
 import 'package:event_app/core/services/auth_services.dart';
-import 'package:event_app/core/services/user_services.dart';
-import 'package:event_app/modules/authentication/models/user_model.dart';
 import 'package:flutter/material.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -11,39 +10,14 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  UserModel? userData;
-  bool isLoading = true;
+  bool isLoading = false;
   bool isRefreshing = false;
 
   @override
   void initState() {
     super.initState();
-    _loadUserData();
   }
 
-  Future<void> _loadUserData() async {
-    try {
-      final user = await UserService.getCurrentUserData();
-      setState(() {
-        userData = user;
-        isLoading = false;
-        isRefreshing = false;
-      });
-    } catch (e) {
-      print('Error loading user data: $e');
-      setState(() {
-        isLoading = false;
-        isRefreshing = false;
-      });
-    }
-  }
-
-  Future<void> _refreshUserData() async {
-    setState(() {
-      isRefreshing = true;
-    });
-    await _loadUserData();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -86,7 +60,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 bottomRight: Radius.circular(50),
                               ),
                             ),
-                            child: userData?.photoUrl != null
+                            child: AppDataService.currentUserData!.photoUrl !=
+                                null
                                 ? ClipRRect(
                               borderRadius: BorderRadius.only(
                                 bottomLeft: Radius.circular(50),
@@ -94,7 +69,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 bottomRight: Radius.circular(50),
                               ),
                               child: Image.network(
-                                userData!.photoUrl!,
+                                AppDataService.currentUserData?.photoUrl ??
+                                    "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
                                 fit: BoxFit.cover,
                                 errorBuilder: (context, error, stackTrace) {
                                   return Icon(
@@ -120,7 +96,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Text(
-                                    userData?.name ?? "User",
+                                    AppDataService.currentUserData?.name ??
+                                        "User",
                                     style: Theme
                                         .of(context)
                                         .textTheme
@@ -129,7 +106,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   ),
                                   SizedBox(height: 8),
                                   Text(
-                                    userData?.email ?? "No email",
+                                    AppDataService.currentUserData?.email ??
+                                        "No email",
                                     style: Theme
                                         .of(context)
                                         .textTheme
@@ -145,7 +123,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       borderRadius: BorderRadius.circular(12),
                                     ),
                                     child: Text(
-                                      userData?.role?.toUpperCase() ?? "USER",
+                                      AppDataService.currentUserData?.role
+                                          ?.toUpperCase() ?? "USER",
                                       style: Theme
                                           .of(context)
                                           .textTheme

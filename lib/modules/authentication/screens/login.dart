@@ -1,6 +1,7 @@
 import 'package:event_app/core/constants/colors.dart';
 import 'package:event_app/core/constants/image_strings.dart';
 import 'package:event_app/core/route/route_name.dart';
+import 'package:event_app/core/services/app_data_services.dart';
 import 'package:event_app/core/services/auth_services.dart';
 import 'package:event_app/core/services/user_services.dart';
 import 'package:event_app/core/wedgits/cutsome_text_filed.dart';
@@ -24,9 +25,12 @@ class _LoginScreenState extends State<LoginScreen> {
       final user = userCredential.user;
       if (user != null) {
         final userExists = await UserService.userExists(user.uid);
+        AppDataService.getcurrentUserData();
         if (!userExists) {
           // Create user data in Firestore
           await UserService.createUserFromFirebaseUser(user);
+          AppDataService.getcurrentUserData();
+
         }
       }
       Navigator.pushReplacementNamed(context, RouteNames.layout);
