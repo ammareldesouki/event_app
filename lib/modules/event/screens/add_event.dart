@@ -5,10 +5,8 @@ import 'package:event_app/core/route/route_name.dart';
 import 'package:event_app/core/services/app_data_services.dart';
 import 'package:event_app/core/wedgits/cutsome_text_filed.dart';
 import 'package:event_app/modules/event/widgets/create_event_catagory_card.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../../core/services/event_services.dart';
@@ -32,12 +30,10 @@ class _AddEventScreenState extends State<AddEventScreen> {
   LatLng? _eventLocation;
   bool _isMapView = false;
   final _formKey = GlobalKey<FormState>();
-  final _user = FirebaseAuth.instance.currentUser;
 
   @override
   void initState() {
     super.initState();
-    _getCurrentLocation();
   }
 
   @override
@@ -48,51 +44,6 @@ class _AddEventScreenState extends State<AddEventScreen> {
     super.dispose();
   }
 
-  Future<void> _getCurrentLocation() async {
-    try {
-      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-      if (!serviceEnabled) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Please enable location services')),
-          );
-        }
-        return;
-      }
-
-      LocationPermission permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-        if (permission == LocationPermission.denied) {
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Location permissions are denied')),
-            );
-          }
-          return;
-        }
-      }
-
-      if (permission == LocationPermission.deniedForever) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-                content: Text('Location permissions are permanently denied')),
-          );
-        }
-        return;
-      }
-
-
-
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error getting location: $e')),
-        );
-      }
-    }
-  }
 
   Future<void> _selectTime() async {
     final picked = await showTimePicker(
@@ -167,9 +118,10 @@ class _AddEventScreenState extends State<AddEventScreen> {
       EasyLoading.show(status: 'Creating event...');
       await EventFireBaseFireStore.createNewEvent(
           EventModel(
-              locationEvent: LatLng(52.2165157, 6.9437819),
-              // Consider using a unique id in production
               title: _titleController.text,
+              // Consider using a unique id in production
+              locationEvent: _eventLocation ?? LatLng(52.2165157, 52.2165157)
+              ,
               description: _descriptionController.text,
               dateTime: _dateController!,
               timeString: EventModel.timeOfDayToString(

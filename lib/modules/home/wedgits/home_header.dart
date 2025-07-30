@@ -3,9 +3,11 @@ import 'package:event_app/core/constants/image_strings.dart';
 import 'package:event_app/core/route/route_name.dart';
 import 'package:event_app/core/services/app_data_services.dart';
 import 'package:event_app/core/services/auth_services.dart';
+import 'package:event_app/core/services/theme_service.dart';
 import 'package:event_app/modules/event/catagoryList.dart';
 import 'package:event_app/modules/home/wedgits/catagory_card.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class HomeHeader extends StatefulWidget {
 
@@ -27,6 +29,7 @@ class _HomeHeaderState extends State<HomeHeader> {
 
   @override
   Widget build(BuildContext context) {
+    final themeService = Provider.of<ThemeService>(context);
 
     return Stack(
       children: [
@@ -60,7 +63,16 @@ class _HomeHeaderState extends State<HomeHeader> {
                         .copyWith(color: TColors.white),
                   ),
                   Spacer(),
-                  Icon(Icons.wb_sunny_outlined, color: Colors.white),
+                  IconButton(
+                    onPressed: () {
+                      themeService.toggleTheme();
+                    },
+                    icon: Icon(
+                      themeService.isDarkMode ? Icons.wb_sunny : Icons
+                          .nightlight_round,
+                      color: Colors.white,
+                    ),
+                  ),
                   SizedBox(width: 10),
                   Container(
                     width: 50,

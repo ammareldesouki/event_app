@@ -6,6 +6,7 @@ import 'package:event_app/core/services/app_data_services.dart';
 import 'package:event_app/core/services/event_services.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 
 
@@ -19,7 +20,6 @@ class EventDetailsScreen extends StatefulWidget {
 }
 
 class _EventDetailsScreenState extends State<EventDetailsScreen> {
-  DateTime? _dateController;
   TimeOfDay? _timeController;
 
 
@@ -226,6 +226,21 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                         .copyWith(color: TColors.primary),)
                   ],
                 ),
+              ),
+            ),
+
+            Container(
+              height: 360,
+              child: GoogleMap(initialCameraPosition: CameraPosition(
+                  zoom: 20, target: widget.eventModel.locationEvent),
+                mapType: MapType.normal,
+                zoomControlsEnabled: true,
+                markers: {
+                  Marker(markerId: MarkerId(widget.eventModel.id.toString()),
+                      position: widget.eventModel.locationEvent,
+                      icon: BitmapDescriptor.defaultMarkerWithHue(
+                          BitmapDescriptor.hueAzure))
+                },
               ),
             ),
 

@@ -3,6 +3,9 @@ import 'package:event_app/core/route/route_name.dart';
 import 'package:event_app/core/services/app_data_services.dart';
 import 'package:event_app/core/services/auth_services.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../../core/services/theme_service.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -21,6 +24,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final themeService = Provider.of<ThemeService>(context);
     return Scaffold(
 
       body: isLoading
@@ -119,7 +123,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     padding: EdgeInsets.symmetric(
                                         horizontal: 12, vertical: 4),
                                     decoration: BoxDecoration(
-                                      color: Colors.white.withOpacity(0.2),
+                                      color: Colors.white,
                                       borderRadius: BorderRadius.circular(12),
                                     ),
                                     child: Text(
@@ -224,7 +228,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     child: DropdownButton(
                       isExpanded: true,
                       hint: Text(
-                        "Dark",
+                        themeService.isDarkMode ?
+                        "Dark" : "Light",
                         style: Theme
                             .of(context)
                             .textTheme
@@ -233,6 +238,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                       items: [
                         DropdownMenuItem(
+
                           child: Text(
                             "Dark",
                             style: Theme
@@ -240,7 +246,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 .textTheme
                                 .titleMedium!
                                 .copyWith(color: TColors.primary),
+
                           ),
+
                           value: "Dark",
                         ),
                         DropdownMenuItem(
@@ -255,7 +263,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           value: "Light",
                         ),
                       ],
-                      onChanged: (value) => value,
+                      onChanged: (value) {
+                        value == 'Light'
+                            ? themeService.setLightMode()
+                            : themeService.setDarkMode();
+                      },
                     ),
                   ),
                 ),

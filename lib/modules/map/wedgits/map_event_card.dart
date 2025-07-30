@@ -13,30 +13,44 @@ class MapEventCard extends StatelessWidget {
     return Container(
       height: 94,
 
-      decoration: BoxDecoration(color: Color(0xffF2FEFF)),
+      decoration: BoxDecoration(color: Color(0xffF2FEFF),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: TColors.primary)),
+
+
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        spacing: 10,
         children: [
-          Container(
-            width: 200,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8),
-              image: DecorationImage(
-                image: AssetImage(eventModel.eventImage),
-                fit: BoxFit.cover,
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
+              width: 200,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                image: DecorationImage(
+                  image: AssetImage(eventModel.eventImage),
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
           ),
           Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: 10,
             children: [
-              Text(
-                eventModel.title,
-                style: Theme.of(
-                  context,
-                ).textTheme.bodyMedium!.copyWith(color: TColors.primary),
+              Expanded(
+                child: Text(
+                  eventModel.title,
+                  style: Theme
+                      .of(
+                    context,
+                  )
+                      .textTheme
+                      .bodyMedium!
+                      .copyWith(color: TColors.primary),
+                ),
               ),
-              Text(eventModel.locationEvent.toString()),
+              Expanded(child: Text(eventModel.locationEvent.toString())),
             ],
           ),
         ],

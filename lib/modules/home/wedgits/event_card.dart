@@ -25,6 +25,7 @@ class _EventCardState extends State<EventCard> {
   }
   @override
   Widget build(BuildContext context) {
+
     print(
         "------------------${widget.eventModel.id}--------------------------");
     String month = DateFormat.MMMM().format(widget.eventModel.dateTime);
@@ -88,7 +89,8 @@ class _EventCardState extends State<EventCard> {
                     Text(widget.eventModel.title, style: Theme
                         .of(context)
                         .textTheme
-                        .bodyLarge),
+                        .bodyLarge!
+                        .copyWith(color: Colors.black)),
                     InkWell(
                         onTap: () {
                           widget.eventModel.isFavourite = !widget.eventModel
