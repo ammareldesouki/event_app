@@ -25,6 +25,7 @@ class EventFireBaseFireStore {
   static Future<List<EventModel>> getEventList() async {
     var collectionReference = _getCollectionReferance();
     var querySnapshot = await collectionReference.get();
+
     return querySnapshot.docs.map((doc) => doc.data()).toList();
   }
 
@@ -43,4 +44,32 @@ class EventFireBaseFireStore {
     var documentReference = collectionReference.doc(eventModel.id);
     await documentReference.set(eventModel);
   }
+
+  static Stream<QuerySnapshot<EventModel>> getStreemeventList() {
+    var collectionReference = _getCollectionReferance();
+
+    return collectionReference.snapshots();
+  }
+
+  static Stream<QuerySnapshot<EventModel>> getStreemeventFavouritList() {
+    var collectionReference = _getCollectionReferance().where(
+        "isFavourite", isEqualTo: true
+    );
+
+
+    return collectionReference.snapshots();
+  }
+
+  static Stream<QuerySnapshot<EventModel>> getStreemeventtListByCategory(
+      {required String CategoryName}) {
+    var collectionReference = _getCollectionReferance()
+        .where("categoryName", isEqualTo: CategoryName);
+
+    return collectionReference.snapshots();
+  }
+
+
+
+
+
 }

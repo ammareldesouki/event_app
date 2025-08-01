@@ -133,22 +133,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
           )
       );
       EasyLoading.showSuccess('Event created successfully');
-      if (mounted) {
-        AppDataService.events.add(EventModel(
-            locationEvent: LatLng(52.2165157, 6.9437819),
-            // Consider using a unique id in production
-            title: _titleController.text,
-            description: _descriptionController.text,
-            dateTime: _dateController!,
-            timeString: EventModel.timeOfDayToString(
-                _timeController!),
-            categoryName: Data.categories[selectedIndex]
-                .name,
-            eventImage: Data.categories[selectedIndex]
-                .imagePath
-        ));
-        Navigator.pushReplacementNamed(context, RouteNames.layout);
-      }
+
     } catch (e) {
       EasyLoading.showError('Failed to create event: $e');
     }
@@ -185,13 +170,14 @@ class _AddEventScreenState extends State<AddEventScreen> {
             Marker(
               markerId: const MarkerId('eventLocation'),
               position: _eventLocation!,
+                icon: BitmapDescriptor.defaultMarkerWithHue(
+                    BitmapDescriptor.hueAzure)
             ),
           if (_currentPosition != null)
             Marker(
               markerId: const MarkerId('currentLocation'),
               position: _currentPosition!,
-              icon: BitmapDescriptor.defaultMarkerWithHue(
-                  BitmapDescriptor.hueBlue),
+
             ),
         },
         onMapCreated: (controller) {

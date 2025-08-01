@@ -7,6 +7,8 @@ import 'package:event_app/core/wedgits/cutsome_text_filed.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../../../l10n/app_localizations.dart';
+
 class RegisterScreen extends StatefulWidget {
   @override
   _RegisterScreenState createState() => _RegisterScreenState();
@@ -64,7 +66,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               Image(image: AssetImage(TImages.logo), height: 136),
               SizedBox(height: 16),
               TCustomeTextFormField(
-                hintText: "Name",
+                hintText: AppLocalizations.of(context)!.firstName,
                 controller: _nameController,
                 child: Padding(
                   padding: const EdgeInsets.all(10.0),
@@ -73,7 +75,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
               SizedBox(height: 16),
               TCustomeTextFormField(
-                hintText: "Email",
+                hintText: AppLocalizations.of(context)!.email,
                 controller: _emailController,
                 validator: _validateEmail,
                 child: Padding(
@@ -83,7 +85,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
               SizedBox(height: 16),
               TCustomeTextFormField(
-                hintText: "Password",
+                hintText: AppLocalizations.of(context)!.password,
                 controller: _passwordController,
                 validator: _validatePassword,
                 child: Padding(
@@ -94,7 +96,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
               SizedBox(height: 16),
               TCustomeTextFormField(
-                hintText: "Re-Password",
+                hintText: AppLocalizations.of(context)!.password,
                 controller: _rePasswordController,
                 validator: _validateRePassword,
                 child: Padding(
@@ -136,13 +138,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     }
                   }
                 },
-                child: Text("Create Account"),
+                child: Text(AppLocalizations.of(context)!.createAccount),
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    "Already Have Account ? ",
+                    AppLocalizations.of(context)!.orSignInWith,
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                   TextButton(
@@ -150,7 +152,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       Navigator.pushReplacementNamed(context, RouteNames.login);
                     },
                     child: Text(
-                      "Login",
+                      AppLocalizations.of(context)!.signIn,
                       style: Theme.of(
                         context,
                       ).textTheme.bodyMedium!.copyWith(color: TColors.primary),

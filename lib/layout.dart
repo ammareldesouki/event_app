@@ -1,6 +1,8 @@
 import 'package:event_app/core/constants/colors.dart';
 import 'package:event_app/core/constants/image_strings.dart';
 import 'package:event_app/core/route/route_name.dart';
+import 'package:event_app/favourite/favourite.dart';
+import 'package:event_app/l10n/app_localizations.dart';
 import 'package:event_app/modules/home/screens/home.dart';
 import 'package:event_app/modules/map/map.dart';
 import 'package:event_app/modules/profile/profile.dart';
@@ -23,7 +25,7 @@ class _LayoutState extends State<Layout> {
       Homescreen(),
       MapScreen(),
 
-      Homescreen(),
+      FavouriteScreen(),
 
       ProfileScreen()
 
@@ -51,7 +53,7 @@ class _LayoutState extends State<Layout> {
               ),
               child: Image(image: AssetImage(TImages.homeIcon)),
             ),
-            label: 'Home',
+            label: AppLocalizations.of(context)!.home,
           ),
           BottomNavigationBarItem(
             icon:  Container(
@@ -62,7 +64,7 @@ class _LayoutState extends State<Layout> {
                 borderRadius: BorderRadius.circular(60),
               ),
               child:Image(image: AssetImage(TImages.mapIcon))),
-            label: 'Map',
+            label: AppLocalizations.of(context)!.map,
           ),
 
           BottomNavigationBarItem(
@@ -74,7 +76,7 @@ class _LayoutState extends State<Layout> {
                 borderRadius: BorderRadius.circular(60),
               ),
               child: Image(image: AssetImage(TImages.heartIcon))),
-            label: 'Love',
+            label: AppLocalizations.of(context)!.favourite,
           ),
 
 
@@ -87,7 +89,7 @@ class _LayoutState extends State<Layout> {
                 borderRadius: BorderRadius.circular(60),
               ),
               child: Image(image: AssetImage(TImages.profileIcon))),
-            label: 'Profile',
+            label: AppLocalizations.of(context)!.profile,
           ),
 
           // BottomNavigationBarItem(

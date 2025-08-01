@@ -1,5 +1,6 @@
 import 'package:event_app/core/constants/colors.dart';
 import 'package:event_app/core/models/event_model.dart';
+import 'package:event_app/core/services/app_data_services.dart';
 import 'package:event_app/core/services/event_services.dart';
 import 'package:event_app/modules/event/screens/event_ditailes.dart';
 import 'package:flutter/material.dart';
@@ -26,9 +27,7 @@ class _EventCardState extends State<EventCard> {
   @override
   Widget build(BuildContext context) {
 
-    print(
-        "------------------${widget.eventModel.id}--------------------------");
-    String month = DateFormat.MMMM().format(widget.eventModel.dateTime);
+
     return InkWell(
       onTap: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) =>
@@ -50,32 +49,24 @@ class _EventCardState extends State<EventCard> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                height: 49,
-                width: 43,
+                height: 50,
+                width: 45,
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Column(
-                  children: [
-                    Expanded(child: Text(
-                      widget.eventModel.dateTime.day.toString(), style: Theme
-                        .of(context)
-                        .textTheme
-                        .bodyLarge!
-                        .copyWith(color: TColors.primary),)),
-                    Text(month, style: Theme
-                        .of(context)
-                        .textTheme
-                        .bodySmall!
-                        .copyWith(color: TColors.primary)),
-                  ],
-                ),
+                child: Text(
+                  DateFormat("dd MMM").format(widget.eventModel.dateTime),
+                  style: Theme
+                      .of(context)
+                      .textTheme
+                      .bodyLarge!
+                      .copyWith(color: TColors.primary),),
               ),
               Spacer(),
               Container(
-      
-      
+
+
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(8),
@@ -97,9 +88,6 @@ class _EventCardState extends State<EventCard> {
                               .isFavourite;
                           EventFireBaseFireStore.updateEvent(widget.eventModel);
 
-                          setState(() {
-
-                          });
                         },
                         child: Icon(widget.eventModel.isFavourite == false
                             ? Icons.favorite_border

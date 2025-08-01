@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 
-class ThemeService extends ChangeNotifier {
-  static final ThemeService _instance = ThemeService._internal();
+class AppSettingProvider extends ChangeNotifier {
+  static final AppSettingProvider _instance = AppSettingProvider._internal();
 
-  factory ThemeService() => _instance;
+  factory AppSettingProvider() => _instance;
 
-  ThemeService._internal();
+  AppSettingProvider._internal();
 
   ThemeMode _themeMode = ThemeMode.system;
+  Locale _locale = const Locale('en');
 
   ThemeMode get themeMode => _themeMode;
+
+  Locale get locale => _locale;
 
   bool get isDarkMode => _themeMode == ThemeMode.dark;
 
@@ -20,6 +23,7 @@ class ThemeService extends ChangeNotifier {
   }
 
   void setThemeMode(ThemeMode mode) {
+    if (_themeMode == mode) return;
     _themeMode = mode;
     notifyListeners();
   }
@@ -31,6 +35,20 @@ class ThemeService extends ChangeNotifier {
 
   void setDarkMode() {
     _themeMode = ThemeMode.dark;
+    notifyListeners();
+  }
+
+  void toggleLocale() {
+    if (_locale.languageCode == 'en') {
+      _locale = const Locale('ar');
+    } else {
+      _locale = const Locale('en');
+    }
+    notifyListeners();
+  }
+
+  void setLocale(Locale newLocale) {
+    _locale = newLocale;
     notifyListeners();
   }
 }

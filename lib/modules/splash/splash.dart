@@ -23,7 +23,6 @@ class _SplashScreenState extends State<SplashScreen> {
 
       if (user != null) {
         await AppDataService.getcurrentUserData();
-        await AppDataService.getEventList();
         await AppDataService.getcurrentLocation();
 
         Navigator.pushReplacementNamed(context, RouteNames.layout);

@@ -8,6 +8,8 @@ import 'package:event_app/core/wedgits/cutsome_text_filed.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../../../l10n/app_localizations.dart';
+
 class LoginScreen extends StatefulWidget {
   @override
   _LoginScreenState createState() => _LoginScreenState();
@@ -72,7 +74,7 @@ class _LoginScreenState extends State<LoginScreen> {
               Image(image: AssetImage(TImages.logo), height: 136),
               SizedBox(height: 24),
               TCustomeTextFormField(
-                hintText: "Email",
+                hintText: AppLocalizations.of(context)!.email,
                 controller: _emailController,
                 validator: _validateEmail,
                 child: Padding(
@@ -82,7 +84,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               SizedBox(height: 16),
               TCustomeTextFormField(
-                hintText: "Password",
+                hintText: AppLocalizations.of(context)!.password,
                 controller: _passwordController,
                 validator: _validatePassword,
                 child: Padding(
@@ -99,7 +101,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     Navigator.pushNamed(context, RouteNames.forgetPassword);
                   },
                   child: Text(
-                    'Forgot Password ?',
+                    AppLocalizations.of(context)!.password,
                     style: Theme.of(
                       context,
                     ).textTheme.bodyMedium!.copyWith(color: TColors.primary),
@@ -138,13 +140,13 @@ class _LoginScreenState extends State<LoginScreen> {
                     }
                   }
                 },
-                child: Text("Login"),
+                child: Text(AppLocalizations.of(context)!.signIn),
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    "don't have account?",
+                    AppLocalizations.of(context)!.signupTitle,
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                   TextButton(
@@ -152,7 +154,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       Navigator.pushNamed(context, RouteNames.register);
                     },
                     child: Text(
-                      "Create Account",
+                      AppLocalizations.of(context)!.createAccount,
                       style: Theme.of(
                         context,
                       ).textTheme.bodyMedium!.copyWith(color: TColors.primary),
@@ -185,7 +187,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   children: [
                     Image.asset(TImages.google, width: 24, height: 24),
                     Text(
-                      "Login With Google",
+                      "${AppLocalizations.of(context)!.orSignInWith}Google",
                       style: Theme.of(
                         context,
                       ).textTheme.bodyLarge!.copyWith(color: TColors.primary),

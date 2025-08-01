@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:intl/intl.dart';
 
 class EventModel {
   static String collectionName = 'events';
@@ -33,26 +34,24 @@ class EventModel {
     return {
       "title": title,
       "description": description,
-      "dateTime": dateTime,
+      "dateTime": dateTime.millisecondsSinceEpoch,
       "timeString": timeString,
       "categoryName": categoryName,
       "eventImage": eventImage,
       "isFavourite": isFavourite,
       "Location": GeoPoint(
-          this.locationEvent.latitude, this.locationEvent.latitude)
+          this.locationEvent.latitude, this.locationEvent.longitude)
     };
   }
 
   factory EventModel.fromFirestore(Map<String, dynamic> json, {String? id}) {
-    final fullDateTime = (json['dateTime'] as Timestamp).toDate();
     final loc = json['Location'] as GeoPoint;
 
     return EventModel(
         id: id,
       title: json['title'] ?? '',
       description: json['description'] ?? '',
-        dateTime: DateTime(
-            fullDateTime.year, fullDateTime.month, fullDateTime.day),
+        dateTime: DateTime.fromMillisecondsSinceEpoch(json['dateTime']),
       timeString: json['timeString'] ?? '',
       categoryName: json['categoryName'] ?? '',
         eventImage: json['eventImage'] ?? '',

@@ -1,3 +1,4 @@
+import 'package:animated_custom_dropdown/custom_dropdown.dart';
 import 'package:event_app/core/constants/colors.dart';
 import 'package:event_app/core/route/route_name.dart';
 import 'package:event_app/core/services/app_data_services.dart';
@@ -5,7 +6,7 @@ import 'package:event_app/core/services/auth_services.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../core/services/theme_service.dart';
+import '../../core/services/app_setting_provider.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -24,7 +25,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final themeService = Provider.of<ThemeService>(context);
+    List<String>_Language = ["Englisht", "عربي",];
+    List <String>_Theme = ["Light", "Dark"];
+    final appSetting = Provider.of<AppSettingProvider>(context);
     return Scaffold(
 
       body: isLoading
@@ -51,8 +54,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       padding: const EdgeInsets.all(16.0),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        spacing: 10,
                         children: [
-                          // Profile Image
                           Container(
                             height: 124,
                             width: 124,
@@ -119,23 +122,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         .copyWith(color: Colors.white),
                                   ),
                                   SizedBox(height: 8),
-                                  Container(
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: 12, vertical: 4),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    child: Text(
-                                      AppDataService.currentUserData?.role
-                                          ?.toUpperCase() ?? "USER",
-                                      style: Theme
-                                          .of(context)
-                                          .textTheme
-                                          .bodySmall!
-                                          .copyWith(color: Colors.white),
-                                    ),
-                                  ),
+
                                 ],
                               ),
                             ),
@@ -163,52 +150,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       .textTheme
                       .titleMedium,
                 ),
-                Container(
-                  height: 56,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: TColors.TextFormField, width: 1),
+                CustomDropdown<String>(
+                  hintText: 'Select Languge',
+
+                  items: _Language,
+                  decoration: CustomDropdownDecoration(
+                    listItemStyle: Theme
+                        .of(context)
+                        .textTheme
+                        .titleMedium!
+                        .copyWith(color: TColors.primary),
+                    closedSuffixIcon: Icon(
+                      Icons.arrow_drop_down, size: 30, color: TColors.primary,),
+                    headerStyle: Theme
+                        .of(context)
+                        .textTheme
+                        .titleMedium!
+                        .copyWith(color: TColors.primary),
                   ),
-                  width: double.infinity,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: DropdownButton(
-                      isExpanded: true,
-                      hint: Text(
-                        "Arabic",
-                        style: Theme
-                            .of(context)
-                            .textTheme
-                            .titleMedium!
-                            .copyWith(color: TColors.primary),
-                      ),
-                      items: [
-                        DropdownMenuItem(
-                          child: Text(
-                            "English",
-                            style: Theme
-                                .of(context)
-                                .textTheme
-                                .titleMedium!
-                                .copyWith(color: TColors.primary),
-                          ),
-                          value: "English",
-                        ),
-                        DropdownMenuItem(
-                          child: Text(
-                            "Arabic",
-                            style: Theme
-                                .of(context)
-                                .textTheme
-                                .titleMedium!
-                                .copyWith(color: TColors.primary),
-                          ),
-                          value: "Arabic",
-                        ),
-                      ],
-                      onChanged: (value) => value,
-                    ),
-                  ),
+
+                  onChanged: (value) {},
                 ),
 
                 SizedBox(height: 16),
@@ -216,63 +177,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     .of(context)
                     .textTheme
                     .titleMedium),
-                Container(
-                  height: 56,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: TColors.TextFormField, width: 1),
+                CustomDropdown<String>(
+                  hintText: 'Theme',
+
+                  decoration: CustomDropdownDecoration(
+                    listItemStyle: Theme
+                        .of(context)
+                        .textTheme
+                        .titleMedium!
+                        .copyWith(color: TColors.primary),
+                    closedSuffixIcon: Icon(
+                      Icons.arrow_drop_down, size: 30, color: TColors.primary,),
+                    headerStyle: Theme
+                        .of(context)
+                        .textTheme
+                        .titleMedium!
+                        .copyWith(color: TColors.primary),
                   ),
-                  width: double.infinity,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: DropdownButton(
-                      isExpanded: true,
-                      hint: Text(
-                        themeService.isDarkMode ?
-                        "Dark" : "Light",
-                        style: Theme
-                            .of(context)
-                            .textTheme
-                            .titleMedium!
-                            .copyWith(color: TColors.primary),
-                      ),
-                      items: [
-                        DropdownMenuItem(
+                  items: _Theme,
 
-                          child: Text(
-                            "Dark",
-                            style: Theme
-                                .of(context)
-                                .textTheme
-                                .titleMedium!
-                                .copyWith(color: TColors.primary),
-
-                          ),
-
-                          value: "Dark",
-                        ),
-                        DropdownMenuItem(
-                          child: Text(
-                            "Light",
-                            style: Theme
-                                .of(context)
-                                .textTheme
-                                .titleMedium!
-                                .copyWith(color: TColors.primary),
-                          ),
-                          value: "Light",
-                        ),
-                      ],
-                      onChanged: (value) {
-                        value == 'Light'
-                            ? themeService.setLightMode()
-                            : themeService.setDarkMode();
-                      },
-                    ),
-                  ),
-                ),
-
-                // User ID Display (for debugging)
+                  onChanged: (value) {
+                    if (value == " Dark")
+                      appSetting.setThemeMode(ThemeMode.dark);
+                    else
+                      appSetting.setThemeMode(ThemeMode.light);
+                    appSetting.toggleTheme();
+                  },
+                )
 
               ],
             ),

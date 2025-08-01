@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:event_app/modules/map/wedgits/map_event_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:geolocator/geolocator.dart';
@@ -7,6 +9,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../core/models/event_model.dart';
 import '../../core/services/app_data_services.dart';
+import '../../core/services/event_services.dart';
 
 class MapScreen extends StatefulWidget {
   @override
@@ -29,42 +32,17 @@ class _MapScreenState extends State<MapScreen> {
         position: AppDataService.currentLocation ??
             LatLng(52.2165157, 6.9437819),
         icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRose)));
-    _addEventMarkers();
     EasyLoading.dismiss();
 
-    print("-------------------${AppDataService.currentLocation
-        ?.latitude}-${AppDataService.currentLocation?.longitude}  ------");
+
+
+
 
 
 
 
   }
 
-  Future<void> _addEventMarkers() async {
-    // Ensure events are loaded
-    if (AppDataService.events.isEmpty) {
-      await AppDataService.getEventList();
-    }
-
-    // Add markers for each event
-    for (int i = 0; i < AppDataService.events.length; i++) {
-      final event = AppDataService.events[i] as EventModel;
-      _markers.add(
-        Marker(
-          markerId: MarkerId(event.id ?? 'event_$i'),
-          position: event.locationEvent,
-          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
-          infoWindow: InfoWindow(
-            title: event.title,
-            snippet: event.description,
-          ),
-        ),
-      );
-    }
-    setState(() {
-
-    });
-  }
 
 
   Future<void> _getLocationPermission() async {
@@ -111,31 +89,64 @@ class _MapScreenState extends State<MapScreen> {
             markers: _markers,
             myLocationEnabled: true,
             myLocationButtonEnabled: true,
+
           ),
 
-          // Positioned(
-          //   bottom: 0,
-          //   left: 0,
-          //   right: 0,
-          //   child: Padding(
-          //     padding: const EdgeInsets.all(8.0),
-          //     child: SizedBox(
-          //       height: 100,
-          //
-          //       child: ListView.separated(
-          //         shrinkWrap: true,
-          //         itemCount: AppDataService.events.length,
-          //         scrollDirection: Axis.horizontal,
-          //         itemBuilder: (_, index) {
-          //           return MapEventCard(
-          //             eventModel: AppDataService.events[index],
-          //           );
-          //         },
-          //         separatorBuilder: (_, index) => SizedBox(width: 10),
-          //       ),
-          //     ),
-          //   ),
-          // ),
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: SizedBox(
+                  height: 100,
+                  child: StreamBuilder(
+                    stream: EventFireBaseFireStore.getStreemeventList(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Center(child: CircularProgressIndicator());
+                      } else if (snapshot.hasError) {
+                        return Center(child: Text('Error: ${snapshot.error}'));
+                      } else
+                      if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                        return Center(child: Text('No events found'));
+                      }
+
+                      final eventList = snapshot.data!.docs.map((doc) =>
+                          doc.data()).toList();
+
+
+                      return ListView.separated(
+
+                        shrinkWrap: true,
+                        itemCount: eventList.length,
+                        scrollDirection: Axis.horizontal,
+                        itemBuilder: (_, index) {
+                          return MapEventCard(
+                            eventModel: eventList[index],
+
+                          );
+                        },
+                        separatorBuilder: (_, index) => SizedBox(width: 10),
+
+                      );
+                    },
+                  ),
+
+                  // child: ListView.separated(
+                  //   shrinkWrap: true,
+                  //   itemCount: AppDataService.events.length,
+                  //   scrollDirection: Axis.horizontal,
+                  //   itemBuilder: (_, index) {
+                  //     return MapEventCard(
+                  //       eventModel: AppDataService.events[index],
+                  //     );
+                  //   },
+                  //   separatorBuilder: (_, index) => SizedBox(width: 10),
+                  // ),
+                )
+            ),
+          ),
         ],
       ),
     );
