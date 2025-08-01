@@ -39,7 +39,7 @@ class _HomescreenState extends State<Homescreen> {
         child: Column(
           children: [
             HomeHeader(
-                selectedIndex: selectindex, onTabChanged: updataSelected),
+                selectIndex: selectindex, onChange: updataSelected),
             StreamBuilder(
               stream: selectindex == 0 ? EventFireBaseFireStore
                   .getStreemeventList() : EventFireBaseFireStore

@@ -1,7 +1,6 @@
 import 'package:event_app/core/models/event_model.dart';
 import 'package:event_app/core/services/event_services.dart';
 import 'package:event_app/core/services/user_services.dart';
-import 'package:event_app/favourite/favourite.dart';
 import 'package:event_app/modules/authentication/models/user_model.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';

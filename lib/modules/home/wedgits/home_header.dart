@@ -2,17 +2,20 @@ import 'package:event_app/core/constants/colors.dart';
 import 'package:event_app/core/constants/image_strings.dart';
 import 'package:event_app/core/route/route_name.dart';
 import 'package:event_app/core/services/app_data_services.dart';
+import 'package:event_app/core/services/app_setting_provider.dart';
 import 'package:event_app/core/services/auth_services.dart';
-import 'package:event_app/core/services/theme_service.dart';
+import 'package:event_app/core/services/app_setting_provider.dart';
 import 'package:event_app/modules/event/catagoryList.dart';
 import 'package:event_app/modules/home/wedgits/catagory_card.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class HomeHeader extends StatefulWidget {
+  final int selectIndex;
+  final Function(int) onChange;
 
   const HomeHeader({
-    super.key,
+    super.key, required this.selectIndex, required this.onChange,
   });
 
   @override
@@ -29,7 +32,7 @@ class _HomeHeaderState extends State<HomeHeader> {
 
   @override
   Widget build(BuildContext context) {
-    final themeService = Provider.of<ThemeService>(context);
+    final appSetting = Provider.of<AppSettingProvider>(context);
 
     return Stack(
       children: [
@@ -65,10 +68,10 @@ class _HomeHeaderState extends State<HomeHeader> {
                   Spacer(),
                   IconButton(
                     onPressed: () {
-                      themeService.toggleTheme();
+                      appSetting.toggleTheme();
                     },
                     icon: Icon(
-                      themeService.isDarkMode ? Icons.wb_sunny : Icons
+                      appSetting.isDarkMode ? Icons.wb_sunny : Icons
                           .nightlight_round,
                       color: Colors.white,
                     ),
@@ -77,7 +80,9 @@ class _HomeHeaderState extends State<HomeHeader> {
                   Container(
                     width: 50,
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        appSetting.toggleLocale();
+                      },
                       child: Text(
                         "EN",
                         style: Theme.of(context).textTheme.bodyMedium!
@@ -120,11 +125,9 @@ class _HomeHeaderState extends State<HomeHeader> {
               DefaultTabController(
                   length: Data.categories.length + 1, child: TabBar(
                   onTap: (index) {
-                    selectedIndex = index;
-                    setState(() {
-
-                    });
+                    widget.onChange(index);
                   },
+
 
                   isScrollable: true,
                   tabAlignment: TabAlignment.start,
@@ -138,7 +141,7 @@ class _HomeHeaderState extends State<HomeHeader> {
                     Container(
                       height: 40,
                       decoration: BoxDecoration(
-                        color: selectedIndex == 0 ? TColors.white : TColors
+                        color: widget.selectIndex == 0 ? TColors.white : TColors
                             .primary,
                         border: Border.all(color: selectedIndex == 0
                             ? TColors.primary
@@ -151,7 +154,7 @@ class _HomeHeaderState extends State<HomeHeader> {
                         child: Row(
                           children: [
                             Icon(Icons.explore_rounded,
-                              color: selectedIndex == 0
+                              color: widget.selectIndex == 0
                                   ? TColors.primary
                                   : TColors.white,),
                             SizedBox(width: 5),
@@ -175,7 +178,7 @@ class _HomeHeaderState extends State<HomeHeader> {
 
                     ...Data.categories.map((category) {
                     return CatagoryCard(catagoryModel: category,
-                      isSelected: selectedIndex - 1 ==
+                      isSelected: widget.selectIndex - 1 ==
                           Data.categories.indexOf(category),);
                   }).toList()
 
