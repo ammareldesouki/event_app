@@ -25,7 +25,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    List<String>_Language = ["Englisht", "عربي",];
+    List<String>_Language = ["English", "عربي",];
     List <String>_Theme = ["Light", "Dark"];
     final appSetting = Provider.of<AppSettingProvider>(context);
     return Scaffold(
@@ -151,10 +151,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       .titleMedium,
                 ),
                 CustomDropdown<String>(
+
                   hintText: 'Select Languge',
 
                   items: _Language,
+                  initialItem: appSetting.locale==Locale('en')? "English":"عربي" ,
                   decoration: CustomDropdownDecoration(
+                    closedFillColor: appSetting.isDarkMode? TColors.dark : Colors.white,
+                    closedBorder: Border.all(color: TColors.primary),
+                    expandedBorder: Border.all(color: TColors.primary),
+                    expandedFillColor:appSetting.isDarkMode? TColors.dark : Colors.white,
                     listItemStyle: Theme
                         .of(context)
                         .textTheme
@@ -169,7 +175,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         .copyWith(color: TColors.primary),
                   ),
 
-                  onChanged: (value) {},
+                  onChanged: (value) {
+                    if(value=="English")
+                      appSetting.setLocale(Locale("en"));
+                    else
+                      appSetting.setLocale(Locale("ar"));
+
+                  },
                 ),
 
                 SizedBox(height: 16),
@@ -181,6 +193,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   hintText: 'Theme',
 
                   decoration: CustomDropdownDecoration(
+                    closedFillColor: appSetting.isDarkMode? TColors.dark : Colors.white,
+                    closedBorder: Border.all(color: TColors.primary),
+                    expandedBorder: Border.all(color: TColors.primary),
+                    expandedFillColor:appSetting.isDarkMode? TColors.dark : Colors.white,
                     listItemStyle: Theme
                         .of(context)
                         .textTheme
@@ -195,13 +211,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         .copyWith(color: TColors.primary),
                   ),
                   items: _Theme,
+                  initialItem: appSetting.isDarkMode ? "Dark":"Light",
+
 
                   onChanged: (value) {
-                    if (value == " Dark")
+
+                    if (value == "Dark")
                       appSetting.setThemeMode(ThemeMode.dark);
                     else
                       appSetting.setThemeMode(ThemeMode.light);
-                    appSetting.toggleTheme();
                   },
                 )
 

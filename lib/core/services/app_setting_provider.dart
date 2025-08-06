@@ -1,4 +1,6 @@
+import 'package:event_app/core/services/local_storge_services.dart';
 import 'package:flutter/material.dart';
+
 
 class AppSettingProvider extends ChangeNotifier {
   static final AppSettingProvider _instance = AppSettingProvider._internal();
@@ -6,6 +8,7 @@ class AppSettingProvider extends ChangeNotifier {
   factory AppSettingProvider() => _instance;
 
   AppSettingProvider._internal();
+
 
   ThemeMode _themeMode = ThemeMode.system;
   Locale _locale = const Locale('en');
@@ -24,17 +27,22 @@ class AppSettingProvider extends ChangeNotifier {
 
   void setThemeMode(ThemeMode mode) {
     if (_themeMode == mode) return;
+
     _themeMode = mode;
     notifyListeners();
   }
 
   void setLightMode() {
     _themeMode = ThemeMode.light;
+    LocalStorgeServices.setBpol("isDark", false);
+
     notifyListeners();
   }
 
   void setDarkMode() {
     _themeMode = ThemeMode.dark;
+    LocalStorgeServices.setBpol("isDark", true);
+
     notifyListeners();
   }
 
@@ -44,11 +52,17 @@ class AppSettingProvider extends ChangeNotifier {
     } else {
       _locale = const Locale('en');
     }
+
     notifyListeners();
   }
 
   void setLocale(Locale newLocale) {
     _locale = newLocale;
     notifyListeners();
+  }
+
+  void _loadTheme() {
+    bool? isDark= LocalStorgeServices.getBool("isDark");
+
   }
 }

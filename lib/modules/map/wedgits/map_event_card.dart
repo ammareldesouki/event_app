@@ -1,10 +1,7 @@
 import 'package:event_app/core/models/event_model.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart'; // Add this
-import 'package:provider/provider.dart';
-
 import '../../../core/constants/colors.dart';
-import '../../../core/services/app_setting_provider.dart';
 
 class MapEventCard extends StatefulWidget {
   final EventModel eventModel;
@@ -16,7 +13,6 @@ class MapEventCard extends StatefulWidget {
 }
 
 class _MapEventCardState extends State<MapEventCard> {
-
   String locationText = "Loading...";
 
   @override
@@ -51,8 +47,6 @@ class _MapEventCardState extends State<MapEventCard> {
 
   @override
   Widget build(BuildContext context) {
-    final appSetting = Provider.of<AppSettingProvider>(context);
-
     return Container(
       height: 94,
       width: 361,
@@ -81,24 +75,15 @@ class _MapEventCardState extends State<MapEventCard> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 8),
-                Expanded(
-                  child: Text(
-                    widget.eventModel.title,
-                    style: Theme
-                        .of(context)
-                        .textTheme
-                        .bodyMedium!
-                        .copyWith(color: TColors.primary),
-                  ),
+                Text(
+                widget.eventModel.title,
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyMedium!
+                      .copyWith(color: TColors.primary),
                 ),
                 const SizedBox(height: 8),
-                Expanded(child: Text(locationText, style: Theme
-                    .of(context)
-                    .textTheme
-                    .bodyMedium!
-                    .copyWith(
-                    color: appSetting.isDarkMode ? TColors.white : Colors
-                        .white),)),
+                Text(locationText),
               ],
             ),
           ),

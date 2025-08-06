@@ -1,8 +1,12 @@
 import 'package:event_app/core/constants/image_strings.dart';
 import 'package:event_app/core/route/route_name.dart';
 import 'package:event_app/core/services/app_data_services.dart';
+import 'package:event_app/core/services/app_setting_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../../core/constants/colors.dart';
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -27,17 +31,17 @@ class _SplashScreenState extends State<SplashScreen> {
 
         Navigator.pushReplacementNamed(context, RouteNames.layout);
       } else {
-        Navigator.pushReplacementNamed(context, RouteNames.login);
+        Navigator.pushReplacementNamed(context, RouteNames.onBoarding);
       }
     }
 
 
   @override
   Widget build(BuildContext context) {
-      
+     final appSetting=Provider.of<AppSettingProvider>(context);
 
     return Scaffold(
-      backgroundColor: Color(0xFFEAF7FC),
+      backgroundColor:appSetting.isDarkMode?TColors.dark:  Color(0xFFEAF7FC),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,

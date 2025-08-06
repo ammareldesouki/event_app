@@ -41,7 +41,7 @@ class _HomeHeaderState extends State<HomeHeader> {
               .sizeOf(context)
               .height * 0.3,
           decoration: BoxDecoration(
-            color: TColors.primary,
+            color:  appSetting.isDarkMode? Colors.transparent:  TColors.primary,
             borderRadius: BorderRadius.only(
               bottomRight: Radius.circular(24),
               bottomLeft: Radius.circular(24),
@@ -141,12 +141,10 @@ class _HomeHeaderState extends State<HomeHeader> {
                     Container(
                       height: 40,
                       decoration: BoxDecoration(
-                        color: widget.selectIndex == 0 ? TColors.white : TColors
-                            .primary,
-                        border: Border.all(color: selectedIndex == 0
-                            ? TColors.primary
-                            : TColors.white),
-                        borderRadius: BorderRadius.circular(46),
+                        color: widget.selectIndex==0 ?  appSetting.isDarkMode? TColors.primary: Colors.white :  appSetting.isDarkMode? TColors.dark:TColors.primary,
+                        border: Border.all( color:   widget.selectIndex==0  ?  appSetting.isDarkMode? TColors.primary: TColors.primary:  appSetting.isDarkMode? TColors.primary:Colors.white,),
+
+                          borderRadius: BorderRadius.circular(46),
 
                       ),
                       child: Padding(
@@ -154,9 +152,8 @@ class _HomeHeaderState extends State<HomeHeader> {
                         child: Row(
                           children: [
                             Icon(Icons.explore_rounded,
-                              color: widget.selectIndex == 0
-                                  ? TColors.primary
-                                  : TColors.white,),
+    color:  widget.selectIndex==0  ?  appSetting.isDarkMode? Colors.white: TColors.primary :  appSetting.isDarkMode? TColors.white:Colors.white,),
+
                             SizedBox(width: 5),
                             Text(
                               "All",
@@ -167,9 +164,8 @@ class _HomeHeaderState extends State<HomeHeader> {
                                   .textTheme
                                   .titleSmall!
                                   .copyWith(
-                                  color: selectedIndex == 0
-                                      ? TColors.primary
-                                      : TColors.white),
+                                color:  widget.selectIndex==0  ?  appSetting.isDarkMode? Colors.white: TColors.primary :  appSetting.isDarkMode? TColors.white:Colors.white,),
+
                             ),
                           ],
                         ),

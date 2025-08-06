@@ -59,6 +59,16 @@ class EventFireBaseFireStore {
 
     return collectionReference.snapshots();
   }
+  static Stream<QuerySnapshot<EventModel>> getStreemeventSearchFavouritList(String keyword) {
+    String query = keyword.toLowerCase();
+
+    var collectionReference = _getCollectionReferance()
+        .where("isFavourite", isEqualTo: true)
+        .where('title', isEqualTo: keyword);
+
+    return collectionReference.snapshots();
+  }
+
 
   static Stream<QuerySnapshot<EventModel>> getStreemeventtListByCategory(
       {required String CategoryName}) {

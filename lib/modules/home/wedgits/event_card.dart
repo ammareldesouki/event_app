@@ -1,10 +1,12 @@
 import 'package:event_app/core/constants/colors.dart';
 import 'package:event_app/core/models/event_model.dart';
 import 'package:event_app/core/services/app_data_services.dart';
+import 'package:event_app/core/services/app_setting_provider.dart';
 import 'package:event_app/core/services/event_services.dart';
 import 'package:event_app/modules/event/screens/event_ditailes.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 
 class EventCard extends StatefulWidget {
@@ -26,6 +28,8 @@ class _EventCardState extends State<EventCard> {
   }
   @override
   Widget build(BuildContext context) {
+    final appSetting= Provider.of<AppSettingProvider>(context);
+
 
 
     return InkWell(
@@ -43,62 +47,80 @@ class _EventCardState extends State<EventCard> {
                 image: AssetImage(widget.eventModel.eventImage),
                 fit: BoxFit.cover)
         ),
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                height: 50,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+              height: 50,
                 width: 45,
+
+
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color:appSetting.isDarkMode? TColors.dark: Colors.white,
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Text(
-                  DateFormat("dd MMM").format(widget.eventModel.dateTime),
-                  style: Theme
-                      .of(context)
-                      .textTheme
-                      .bodyLarge!
-                      .copyWith(color: TColors.primary),),
-              ),
-              Spacer(),
-              Container(
-
-
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(8),
-
-              ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal:  8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                child: Column(
                   children: [
-                    Text(widget.eventModel.title, style: Theme
-                        .of(context)
-                        .textTheme
-                        .bodyLarge!
-                        .copyWith(color: Colors.black)),
-                    InkWell(
-                        onTap: () {
-                          widget.eventModel.isFavourite = !widget.eventModel
-                              .isFavourite;
-                          EventFireBaseFireStore.updateEvent(widget.eventModel);
-
-                        },
-                        child: Icon(widget.eventModel.isFavourite == false
-                            ? Icons.favorite_border
-                            : Icons.favorite, color: TColors.primary,)),
+                    Expanded(
+                      child: Text(
+                        DateFormat("dd").format(widget.eventModel.dateTime),
+                        style: Theme
+                            .of(context)
+                            .textTheme
+                            .bodyLarge!
+                            .copyWith(color: TColors.primary),),
+                    ),
+                    Expanded(
+                      child: Text(
+                        DateFormat("MMM").format(widget.eventModel.dateTime),
+                        style: Theme
+                            .of(context)
+                            .textTheme
+                            .bodyLarge!
+                            .copyWith(color: TColors.primary),),
+                    ),
                   ],
                 ),
               ),
-              )
-            ],
-          ),
-          ),
+            ),
+            Spacer(),
+            Container(
+
+
+            decoration: BoxDecoration(
+              color:appSetting.isDarkMode? TColors.dark: Colors.white,
+              borderRadius: BorderRadius.circular(8),
+
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal:  8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(widget.eventModel.title, style: Theme
+                      .of(context)
+                      .textTheme
+                      .bodyLarge!
+                      .copyWith(                  color:appSetting.isDarkMode? Colors.white: Colors.black,
+                  )),
+                  InkWell(
+                      onTap: () {
+                        widget.eventModel.isFavourite = !widget.eventModel
+                            .isFavourite;
+                        EventFireBaseFireStore.updateEvent(widget.eventModel);
+
+                      },
+                      child: Icon(widget.eventModel.isFavourite == false
+                          ? Icons.favorite_border
+                          : Icons.favorite, color: TColors.primary,)),
+                ],
+              ),
+            ),
+            )
+          ],
+        ),
 
 
       ),

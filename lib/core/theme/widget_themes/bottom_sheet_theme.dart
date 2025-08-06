@@ -16,7 +16,7 @@ class BottomNavTheme {
   );
 
   static BottomNavigationBarThemeData dark = BottomNavigationBarThemeData(
-    backgroundColor: TColors.primary,
+    backgroundColor: TColors.dark,
     selectedItemColor: Colors.white,
     unselectedItemColor: Colors.white,
     selectedIconTheme: IconThemeData(size: 28),

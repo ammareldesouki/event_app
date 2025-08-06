@@ -8,7 +8,9 @@ import 'package:event_app/modules/event/widgets/create_event_catagory_card.dart'
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:provider/provider.dart';
 
+import '../../../core/services/app_setting_provider.dart';
 import '../../../core/services/event_services.dart';
 import '../catagoryList.dart';
 
@@ -141,6 +143,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final appSetting = Provider.of<AppSettingProvider>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -331,32 +334,33 @@ class _AddEventScreenState extends State<AddEventScreen> {
                 ElevatedButton(
                   onPressed: _toggleMapView,
                   style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Image.asset(TImages.location, width: 24),
-                        const SizedBox(width: 8),
-                        Text(
-                          _eventLocation != null
-                              ? 'Location Selected'
-                              : 'Choose Location',
-                          style: Theme
-                              .of(context)
-                              .textTheme
-                              .bodyMedium!
-                              .copyWith(color: TColors.primary),
-                        ),
-                      ],
-                    ),
+                      backgroundColor: appSetting.isDarkMode?TColors.dark: Colors.white),
+                  child: Row(
+
+                    children: [
+                      Image(image: AssetImage(TImages.location)),
+                      const SizedBox(width: 8),
+                      Text(
+                        _eventLocation != null
+                            ? 'Location Selected'
+                            : 'Choose Location',
+                        style: Theme
+                            .of(context)
+                            .textTheme
+                            .bodyMedium!
+                            .copyWith(color: TColors.primary),
+                      ),
+                    ],
                   ),
                 ),
+
+
               ],
             ),
+
           ),
         ),
+
       ),
       floatingActionButton: _isMapView ?
       Container(

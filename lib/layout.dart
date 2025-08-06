@@ -1,11 +1,15 @@
 import 'package:event_app/core/constants/colors.dart';
 import 'package:event_app/core/constants/image_strings.dart';
 import 'package:event_app/core/route/route_name.dart';
+import 'package:event_app/core/services/app_setting_provider.dart';
 import 'package:event_app/l10n/app_localizations.dart';
 import 'package:event_app/modules/home/screens/home.dart';
 import 'package:event_app/modules/map/map.dart';
 import 'package:event_app/modules/profile/profile.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import 'modules/favourite/favourite.dart';
 
 
 class Layout extends StatefulWidget {
@@ -20,12 +24,12 @@ class _LayoutState extends State<Layout> {
   int _selectedIndex = 0;
   @override
   Widget build(BuildContext context) {
+    final appSetting=Provider.of<AppSettingProvider>(context);
     final List<Widget> screen = [
       Homescreen(),
       MapScreen(),
 
-      Homescreen(),
-
+      FavouriteScreen(),
       ProfileScreen()
 
     ];
@@ -115,7 +119,7 @@ class _LayoutState extends State<Layout> {
           child: CircleAvatar(
             radius: 22,
             child: Icon(Icons.add, color: Colors.white),
-            backgroundColor: TColors.primary,
+            backgroundColor: appSetting.isDarkMode? TColors.dark:  TColors.primary,
           ),
 
         ),

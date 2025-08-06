@@ -1,7 +1,9 @@
 import 'package:event_app/core/constants/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../../core/models/catagory_model.dart';
+import '../../../core/services/app_setting_provider.dart';
 
 class CatagoryCard extends StatelessWidget {
   final CategoryModel catagoryModel;
@@ -13,20 +15,25 @@ class CatagoryCard extends StatelessWidget {
   
   @override
   Widget build(BuildContext context) {
-    return Container(
+    final appSetting = Provider.of<AppSettingProvider>(context);
+
+
+  return Container(
       height: 40,
       decoration: BoxDecoration(
-        color: isSelected ? TColors.white : TColors.primary,
-        border: Border.all(color: isSelected ? TColors.primary : TColors.white),
         borderRadius: BorderRadius.circular(46),
 
+        color: isSelected ?  appSetting.isDarkMode? TColors.primary: Colors.white :  appSetting.isDarkMode? TColors.dark:TColors.primary,
+
+        border: Border.all(        color: isSelected ?  appSetting.isDarkMode? TColors.primary: TColors.primary:  appSetting.isDarkMode? TColors.primary:Colors.white,
+        ),
       ),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Row(
           children: [
             Icon(catagoryModel.icon,
-              color: isSelected ? TColors.primary : TColors.white,),
+              color: isSelected ?  appSetting.isDarkMode? Colors.white: TColors.primary :  appSetting.isDarkMode? TColors.white:Colors.white,),
             SizedBox(width: 5),
             Text(
               catagoryModel.name,
@@ -36,7 +43,7 @@ class CatagoryCard extends StatelessWidget {
                   .textTheme
                   .titleSmall!
                   .copyWith(
-                  color: isSelected ? TColors.primary : TColors.white),
+                color: isSelected ?  appSetting.isDarkMode? Colors.white: TColors.primary :  appSetting.isDarkMode? TColors.white:Colors.white,),
             ),
           ],
         ),

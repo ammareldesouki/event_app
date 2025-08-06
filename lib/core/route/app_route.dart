@@ -9,6 +9,8 @@ import 'package:event_app/modules/profile/profile.dart';
 import 'package:event_app/modules/splash/splash.dart';
 import 'package:flutter/material.dart';
 
+import '../../modules/onBoarding/on_boarding.dart';
+
 class AppRouter {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -49,6 +51,12 @@ class AppRouter {
           builder: (_) => ProfileScreen(),
           settings: settings,
         );
+      case RouteNames.onBoarding :
+        return MaterialPageRoute(
+          builder: (_) => OnboardingScreen(),
+          settings: settings,
+        );
+
 
       default:
         return MaterialPageRoute(
