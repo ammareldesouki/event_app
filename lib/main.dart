@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:event_app/core/route/app_route.dart';
 import 'package:event_app/core/route/route_name.dart';
 import 'package:event_app/core/services/app_setting_provider.dart';
@@ -8,54 +9,46 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
-
+import 'core/services/local_storge_services.dart';
 import 'firebase_options.dart';
 import 'l10n/app_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const MyApp());
+
+  await LocalStorgeServices.init(); // Fixed typo
+
+  // Preload settings before running the app
+  final appSettingProvider = AppSettingProvider();
+  await appSettingProvider.loadSettings();
+
+  runApp(MyApp(appSettingProvider: appSettingProvider));
 }
 
-class MyApp extends StatefulWidget {
-  const MyApp({super.key});
+class MyApp extends StatelessWidget {
+  final AppSettingProvider appSettingProvider;
 
-  @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  @override
-  void initState() {
-    super.initState();
-    FirebaseAuth.instance.authStateChanges().listen((User? user) {
-      if (user == null) {
-        print('--------User is currently signed out!-------------');
-      } else {
-        print('--------------User is signed in!----------------------');
-      }
-    });
-  }
+  const MyApp({super.key, required this.appSettingProvider});
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => AppSettingProvider(),
+    return ChangeNotifierProvider.value(
+      value: appSettingProvider,
       child: Consumer<AppSettingProvider>(
-        builder: (context, AppSettingProvider, child) {
+        builder: (context, provider, child) {
           return MaterialApp(
-            locale: AppSettingProvider.locale,
+            locale: provider.locale,
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
             debugShowCheckedModeBanner: false,
             title: 'Flutter Demo',
             initialRoute: RouteNames.splash,
             onGenerateRoute: AppRouter.generateRoute,
-            themeMode: AppSettingProvider.themeMode,
+            themeMode: provider.themeMode,
             theme: TAppTheme.lightAppTheme,
             darkTheme: TAppTheme.darkAppTheme,
             builder: EasyLoading.init(),

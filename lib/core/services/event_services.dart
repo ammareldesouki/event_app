@@ -51,10 +51,10 @@ class EventFireBaseFireStore {
     return collectionReference.snapshots();
   }
 
-  static Stream<QuerySnapshot<EventModel>> getStreemeventFavouritList() {
+  static Stream<QuerySnapshot<EventModel>> getStreemeventFavouritList( String userid) {
     var collectionReference = _getCollectionReferance().where(
         "isFavourite", isEqualTo: true
-    );
+    ).where("userId",isEqualTo: userid);
 
 
     return collectionReference.snapshots();
@@ -78,8 +78,23 @@ class EventFireBaseFireStore {
     return collectionReference.snapshots();
   }
 
+  // Get events by user ID
+  static Stream<QuerySnapshot<EventModel>> getStreemeventListByUserId(String userId) {
+    var collectionReference = _getCollectionReferance()
+        .where("userId", isEqualTo: userId);
 
+    return collectionReference.snapshots();
+  }
 
+  // Get events by user ID and category
+  static Stream<QuerySnapshot<EventModel>> getStreemeventListByUserIdAndCategory(
+      {required String userId, required String categoryName}) {
+    var collectionReference = _getCollectionReferance()
+        .where("userId", isEqualTo: userId)
+        .where("categoryName", isEqualTo: categoryName);
+
+    return collectionReference.snapshots();
+  }
 
 
 }

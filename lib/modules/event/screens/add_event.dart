@@ -1,8 +1,10 @@
 import 'package:event_app/core/constants/colors.dart';
 import 'package:event_app/core/constants/image_strings.dart';
 import 'package:event_app/core/models/event_model.dart';
+import 'package:event_app/core/models/user_model.dart';
 import 'package:event_app/core/route/route_name.dart';
 import 'package:event_app/core/services/app_data_services.dart';
+import 'package:event_app/core/services/user_services.dart';
 import 'package:event_app/core/wedgits/cutsome_text_filed.dart';
 import 'package:event_app/modules/event/widgets/create_event_catagory_card.dart';
 import 'package:flutter/material.dart';
@@ -143,6 +145,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
 
   @override
   Widget build(BuildContext context) {
+
     final appSetting = Provider.of<AppSettingProvider>(context);
     return Scaffold(
       appBar: AppBar(

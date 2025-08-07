@@ -28,6 +28,11 @@ class _HomescreenState extends State<Homescreen> {
   @override
   void initState() {
     super.initState();
+    _loadCurrentUserData();
+  }
+
+  Future<void> _loadCurrentUserData() async {
+    await AppDataService.getcurrentUserData();
   }
 
 
@@ -41,10 +46,11 @@ class _HomescreenState extends State<Homescreen> {
             HomeHeader(
                 selectIndex: selectindex, onChange: updataSelected),
             StreamBuilder(
-              stream: selectindex == 0 ? EventFireBaseFireStore
-                  .getStreemeventList() : EventFireBaseFireStore
-                  .getStreemeventtListByCategory(
-                  CategoryName: Data.categories[selectindex].name),
+              stream: selectindex == 0 
+                  ? EventFireBaseFireStore.getStreemeventListByUserId(AppDataService.currentUserData?.uid ?? '')
+                  : EventFireBaseFireStore.getStreemeventListByUserIdAndCategory(
+                      userId: AppDataService.currentUserData?.uid ?? '',
+                      categoryName: Data.categories[selectindex-1].name),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Center(child: CircularProgressIndicator());

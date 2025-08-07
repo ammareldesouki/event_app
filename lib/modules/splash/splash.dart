@@ -2,6 +2,8 @@ import 'package:event_app/core/constants/image_strings.dart';
 import 'package:event_app/core/route/route_name.dart';
 import 'package:event_app/core/services/app_data_services.dart';
 import 'package:event_app/core/services/app_setting_provider.dart';
+import 'package:event_app/core/services/local_storge_key.dart';
+import 'package:event_app/core/services/local_storge_services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -31,7 +33,10 @@ class _SplashScreenState extends State<SplashScreen> {
 
         Navigator.pushReplacementNamed(context, RouteNames.layout);
       } else {
+        if(LocalStorgeServices.getBool(LocalStorgeKey.isFirstTime)==null)
         Navigator.pushReplacementNamed(context, RouteNames.onBoarding);
+else
+        Navigator.pushReplacementNamed(context, RouteNames.login);
       }
     }
 

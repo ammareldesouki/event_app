@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:event_app/core/services/app_data_services.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
@@ -15,6 +16,8 @@ class EventModel {
   final String eventImage;
   bool isFavourite;
   final LatLng locationEvent;
+   String? userid;
+
 
 
   EventModel({
@@ -27,7 +30,7 @@ class EventModel {
     required this.categoryName,
     required this.eventImage,
     this.isFavourite = false,
-
+    this.userid,
   });
 
   Map<String, dynamic> toFireStor() {
@@ -40,7 +43,8 @@ class EventModel {
       "eventImage": eventImage,
       "isFavourite": isFavourite,
       "Location": GeoPoint(
-          this.locationEvent.latitude, this.locationEvent.longitude)
+          this.locationEvent.latitude, this.locationEvent.longitude),
+      "userId":AppDataService.currentUserData!.uid
     };
   }
 
@@ -56,7 +60,8 @@ class EventModel {
       categoryName: json['categoryName'] ?? '',
         eventImage: json['eventImage'] ?? '',
         isFavourite: json['isFavourite'] ?? false,
-        locationEvent: LatLng(loc.latitude, loc.longitude)
+        locationEvent: LatLng(loc.latitude, loc.longitude),
+        userid :json["userId"]
 
     );
   }

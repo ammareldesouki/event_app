@@ -122,6 +122,8 @@ class _MapScreenState extends State<MapScreen> {
                         itemCount: eventList.length,
                         scrollDirection: Axis.horizontal,
                         itemBuilder: (_, index) {
+                          _markers.add(Marker(markerId: MarkerId(eventList[index].toString()),position:  eventList[index].locationEvent,icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure)));
+
                           return MapEventCard(
                             eventModel: eventList[index],
 
@@ -133,17 +135,7 @@ class _MapScreenState extends State<MapScreen> {
                     },
                   ),
 
-                  // child: ListView.separated(
-                  //   shrinkWrap: true,
-                  //   itemCount: AppDataService.events.length,
-                  //   scrollDirection: Axis.horizontal,
-                  //   itemBuilder: (_, index) {
-                  //     return MapEventCard(
-                  //       eventModel: AppDataService.events[index],
-                  //     );
-                  //   },
-                  //   separatorBuilder: (_, index) => SizedBox(width: 10),
-                  // ),
+
                 )
             ),
           ),

@@ -1,5 +1,7 @@
 import 'package:event_app/core/route/app_route.dart';
 import 'package:event_app/core/route/route_name.dart';
+import 'package:event_app/core/services/local_storge_key.dart';
+import 'package:event_app/core/services/local_storge_services.dart';
 import 'package:event_app/modules/onBoarding/wedgits/on_boarding_wedgit.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -53,8 +55,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     super.dispose();
   }
 
-  void goToHome() {
-    Navigator.pushReplacementNamed(context, RouteNames.layout);
+  void goToAuth() {
+    LocalStorgeServices.setBpol(LocalStorgeKey.isFirstTime, false);
+    Navigator.pushReplacementNamed(context, RouteNames.login);
   }
 
   @override
@@ -98,7 +101,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               child: Text(isLastPage ? "Done" : "Next",style: TextStyle(color: TColors.primary),),
               onPressed: () {
                 if (isLastPage) {
-                  goToHome();
+                  goToAuth();
                 } else {
                   _controller.nextPage(
                     duration: Duration(milliseconds: 100),

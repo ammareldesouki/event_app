@@ -1,7 +1,12 @@
 
 
 abstract class  LocalStorgeKey{
- static final String  recentSura='recent-Sura';
+ static final String isDark = 'isDark';
+ static final String locale = 'locale';
+ static final String  isArabic='isArabic';
+ static final String isFirstTime="isFirstTime";
+
+
 
 
 }
