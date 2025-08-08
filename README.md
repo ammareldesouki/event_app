@@ -1,4 +1,4 @@
-# Event App 📅
+![ui](https://github.com/user-attachments/assets/acb172aa-e3bc-4673-a4d4-b2389f387f4f)# Event App 📅
 
 A comprehensive Flutter event management application that allows users to create, manage, and discover events with location-based features and multi-language support.
 
@@ -89,16 +89,17 @@ lib/
 - **Flutter Lints** (^5.0.0) - Linting rules
 - **Flutter Launcher Icons** (^0.13.1) - App icon generation
 
+- ## 📱 Screenshots
+
+![Alt text](https://github.com/ammareldesouki/event_app/blob/6a17cc2577d615922a55b375cfb15569f77a8aa2/assets/images/ui.jpeg)
+
+---
+
 ## 🎨 Theme System
 
 The app features a comprehensive theming system:
 
-### **Color Palette**
-- **Primary**: `#4b68ff` (Blue)
-- **Secondary**: `#FFE24B` (Yellow)
-- **Accent**: `#b0c7ff` (Light Blue)
-- **Light Background**: `#F6F6F6`
-- **Dark Background**: `#101127`
+
 
 ### **Typography**
 - **Font Family**: Inter (Bold, Italic, Regular)
